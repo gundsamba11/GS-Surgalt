@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GS - Сургалт</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&family=Noto+Sans+Mongolian&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #0a0a0f;
+    --accent: #00d4ff;
+    --accent2: #7c3aed;
+    --gold: #f59e0b;
+    --surface: #111827;
+    --surface2: #1f2937;
+    --text: #f9fafb;
+    --text2: #9ca3af;
+    --success: #10b981;
+    --danger: #ef4444;
+    --border: rgba(255,255,255,0.08);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background: var(--primary); color: var(--text); font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--primary); }
+  ::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 3px; }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 1000;
+    background: rgba(10,10,15,0.92); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px; height: 68px;
+  }
+  .logo { font-size: 1.6rem; font-weight: 900; letter-spacing: -1px; }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { color: var(--text2); text-decoration: none; font-size: .85rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; transition: color .2s; }
+  .nav-links a:hover { color: var(--accent); }
+  .nav-right { display: flex; gap: 12px; align-items: center; }
+  .btn { padding: 9px 22px; border-radius: 8px; font-size: .82rem; font-weight: 700; cursor: pointer; border: none; transition: all .2s; letter-spacing: .5px; }
+  .btn-outline { background: transparent; border: 1.5px solid var(--accent); color: var(--accent); }
+  .btn-outline:hover { background: var(--accent); color: #000; }
+  .btn-primary { background: linear-gradient(135deg, var(--accent2), var(--accent)); color: #fff; }
+  .btn-primary:hover { opacity: .85; transform: translateY(-1px); }
+  .btn-gold { background: linear-gradient(135deg, #f59e0b, #ef4444); color: #000; font-weight: 900; }
+  .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245,158,11,.4); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center; padding: 100px 20px 60px;
+    position: relative; overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(124,58,237,.18) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 40% at 80% 70%, rgba(0,212,255,.1) 0%, transparent 60%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; z-index: 0;
+    background-image: linear-gradient(var(--border) 1px, transparent 1px),
+                      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  }
+  .hero-content { position: relative; z-index: 1; max-width: 900px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.3);
+    color: var(--accent); padding: 6px 18px; border-radius: 100px;
+    font-size: .78rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 28px; animation: fadeUp .8s ease forwards;
+  }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+  .hero h1 {
+    font-size: clamp(2.8rem, 7vw, 5.5rem); font-weight: 900; line-height: 1.05;
+    letter-spacing: -2px; margin-bottom: 24px;
+    animation: fadeUp .9s .1s ease both;
+  }
+  .hero h1 .grad { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { font-size: 1.15rem; color: var(--text2); max-width: 600px; margin: 0 auto 40px; line-height: 1.7; animation: fadeUp 1s .2s ease both; }
+  .hero-cta { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; animation: fadeUp 1s .3s ease both; }
+
+  /* VIDEO SHOWCASE */
+  .video-section { padding: 80px 40px; max-width: 1400px; margin: 0 auto; }
+  .section-header { text-align: center; margin-bottom: 56px; }
+  .section-header h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; letter-spacing: -1px; margin-bottom: 12px; }
+  .section-header p { color: var(--text2); font-size: 1rem; }
+  .videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+  .video-card {
+    background: var(--surface); border-radius: 16px; overflow: hidden;
+    border: 1px solid var(--border); transition: all .3s; cursor: pointer; position: relative;
+  }
+  .video-card:hover { transform: translateY(-6px); border-color: var(--accent); box-shadow: 0 20px 60px rgba(0,212,255,.15); }
+  .video-thumb {
+    width: 100%; aspect-ratio: 16/9; background: var(--surface2);
+    display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden;
+  }
+  .play-btn {
+    width: 56px; height: 56px; border-radius: 50%;
+    background: rgba(0,212,255,.9); display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem; transition: transform .2s; z-index: 2;
+  }
+  .video-card:hover .play-btn { transform: scale(1.1); }
+  .thumb-gradient {
+    position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(124,58,237,.6), rgba(0,212,255,.3));
+  }
+  .video-info { padding: 18px 20px; }
+  .video-info h3 { font-size: .95rem; font-weight: 700; margin-bottom: 6px; }
+  .video-info p { color: var(--text2); font-size: .82rem; }
+  .video-badge { position: absolute; top: 12px; left: 12px; background: var(--accent2); color: #fff; font-size: .7rem; font-weight: 700; padding: 3px 10px; border-radius: 100px; text-transform: uppercase; z-index: 3; }
+
+  /* COURSES */
+  .courses-section { padding: 80px 40px; max-width: 1400px; margin: 0 auto; }
+  .courses-tabs { display: flex; gap: 10px; margin-bottom: 40px; flex-wrap: wrap; justify-content: center; }
+  .tab-btn { padding: 8px 22px; border-radius: 100px; font-size: .82rem; font-weight: 700; cursor: pointer; border: 1.5px solid var(--border); background: transparent; color: var(--text2); transition: all .2s; }
+  .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
+  .tab-btn:hover:not(.active) { border-color: var(--accent2); color: var(--text); }
+  .courses-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
+  .course-card {
+    background: var(--surface); border-radius: 16px; padding: 28px;
+    border: 1px solid var(--border); transition: all .3s; position: relative; overflow: hidden;
+  }
+  .course-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--accent2), var(--accent)); }
+  .course-card:hover { transform: translateY(-4px); box-shadow: 0 16px 50px rgba(0,0,0,.4); border-color: rgba(124,58,237,.4); }
+  .course-icon { font-size: 2.5rem; margin-bottom: 16px; }
+  .course-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+  .course-card p { color: var(--text2); font-size: .83rem; line-height: 1.6; margin-bottom: 20px; }
+  .course-meta { display: flex; justify-content: space-between; align-items: center; }
+  .course-price { font-size: 1.2rem; font-weight: 900; color: var(--gold); }
+  .course-lessons { font-size: .75rem; color: var(--text2); }
+
+  /* TEMPLATES */
+  .templates-section { padding: 80px 40px; max-width: 1400px; margin: 0 auto; }
+  .templates-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+  .template-card {
+    background: var(--surface); border-radius: 14px; overflow: hidden;
+    border: 1px solid var(--border); transition: all .3s; cursor: pointer;
+  }
+  .template-card:hover { transform: translateY(-4px); border-color: var(--gold); box-shadow: 0 16px 50px rgba(245,158,11,.15); }
+  .template-preview {
+    width: 100%; aspect-ratio: 4/3; background: linear-gradient(135deg, var(--surface2), rgba(124,58,237,.2));
+    display: flex; align-items: center; justify-content: center; font-size: 3rem;
+  }
+  .template-info { padding: 16px 18px; }
+  .template-info h3 { font-size: .9rem; font-weight: 700; margin-bottom: 4px; }
+  .template-info p { color: var(--text2); font-size: .78rem; margin-bottom: 12px; }
+  .template-footer { display: flex; justify-content: space-between; align-items: center; }
+  .template-type { font-size: .7rem; background: rgba(124,58,237,.2); color: var(--accent2); padding: 3px 10px; border-radius: 100px; font-weight: 700; text-transform: uppercase; }
+  .template-price { font-weight: 900; color: var(--gold); font-size: 1rem; }
+
+  /* SHOP */
+  .shop-section { padding: 80px 40px; max-width: 1400px; margin: 0 auto; }
+  .shop-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; }
+  .shop-card {
+    background: var(--surface); border-radius: 16px; overflow: hidden;
+    border: 1px solid var(--border); transition: all .3s;
+  }
+  .shop-card:hover { transform: translateY(-4px); border-color: var(--accent2); }
+  .shop-img { width: 100%; aspect-ratio: 1; background: var(--surface2); display: flex; align-items: center; justify-content: center; font-size: 4rem; }
+  .shop-info { padding: 20px; }
+  .shop-info h3 { font-size: .95rem; font-weight: 700; margin-bottom: 6px; }
+  .shop-info p { color: var(--text2); font-size: .8rem; margin-bottom: 14px; }
+  .shop-footer { display: flex; justify-content: space-between; align-items: center; }
+  .shop-price { font-size: 1.15rem; font-weight: 900; color: var(--gold); }
+  .delivery-badge { font-size: .7rem; color: var(--success); font-weight: 700; }
+
+  /* PAYMENT MODAL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 2000; align-items: center; justify-content: center; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border-radius: 20px; padding: 36px; max-width: 480px; width: 90%; border: 1px solid var(--border); position: relative; }
+  .modal-close { position: absolute; top: 16px; right: 20px; background: none; border: none; color: var(--text2); font-size: 1.4rem; cursor: pointer; }
+  .modal h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 8px; }
+  .modal .price-big { font-size: 2.2rem; font-weight: 900; color: var(--gold); margin-bottom: 24px; }
+  .payment-methods { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .pay-method { border: 2px solid var(--border); border-radius: 12px; padding: 16px; text-align: center; cursor: pointer; transition: all .2s; }
+  .pay-method:hover, .pay-method.selected { border-color: var(--accent); background: rgba(0,212,255,.08); }
+  .pay-method .method-icon { font-size: 2rem; margin-bottom: 6px; }
+  .pay-method p { font-size: .78rem; font-weight: 700; }
+  .bank-details { background: var(--surface2); border-radius: 12px; padding: 20px; margin-bottom: 20px; display: none; }
+  .bank-details.show { display: block; }
+  .bank-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: .85rem; }
+  .bank-row span:first-child { color: var(--text2); }
+  .bank-row span:last-child { font-weight: 700; }
+  .qr-box { text-align: center; margin: 16px 0; }
+  .qr-placeholder { width: 140px; height: 140px; margin: 0 auto; background: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+  .upload-receipt { margin-top: 16px; }
+  .upload-receipt label { display: block; border: 2px dashed var(--border); border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; font-size: .82rem; color: var(--text2); transition: border-color .2s; }
+  .upload-receipt label:hover { border-color: var(--accent); }
+  input[type=file] { display: none; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: .8rem; color: var(--text2); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; background: var(--surface2); border: 1.5px solid var(--border);
+    color: var(--text); padding: 10px 14px; border-radius: 8px; font-size: .88rem;
+    font-family: inherit; outline: none; transition: border-color .2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+
+  /* CHAT BOT */
+  .chat-widget { position: fixed; bottom: 28px; right: 28px; z-index: 1500; }
+  .chat-toggle { width: 58px; height: 58px; border-radius: 50%; background: linear-gradient(135deg, var(--accent2), var(--accent)); border: none; cursor: pointer; font-size: 1.5rem; box-shadow: 0 8px 30px rgba(124,58,237,.5); transition: transform .2s; }
+  .chat-toggle:hover { transform: scale(1.1); }
+  .chat-box {
+    position: absolute; bottom: 70px; right: 0;
+    width: 340px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; overflow: hidden; display: none; box-shadow: 0 20px 60px rgba(0,0,0,.5);
+  }
+  .chat-box.open { display: flex; flex-direction: column; }
+  .chat-header { background: linear-gradient(135deg, var(--accent2), var(--accent)); padding: 16px 20px; display: flex; align-items: center; gap: 10px; }
+  .chat-header h4 { font-size: .9rem; font-weight: 700; }
+  .chat-header p { font-size: .72rem; opacity: .8; }
+  .chat-messages { flex: 1; max-height: 300px; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+  .msg { max-width: 80%; padding: 10px 14px; border-radius: 14px; font-size: .83rem; line-height: 1.5; }
+  .msg.bot { background: var(--surface2); align-self: flex-start; border-bottom-left-radius: 4px; }
+  .msg.user { background: var(--accent2); align-self: flex-end; border-bottom-right-radius: 4px; }
+  .chat-quick { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 16px 12px; }
+  .quick-btn { padding: 6px 12px; border-radius: 100px; border: 1px solid var(--border); background: transparent; color: var(--text2); font-size: .72rem; cursor: pointer; transition: all .2s; }
+  .quick-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .chat-input-row { display: flex; gap: 8px; padding: 12px 16px; border-top: 1px solid var(--border); }
+  .chat-input { flex: 1; background: var(--surface2); border: 1.5px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 10px; font-family: inherit; font-size: .83rem; outline: none; }
+  .chat-input:focus { border-color: var(--accent); }
+  .chat-send { background: var(--accent2); border: none; color: #fff; padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: .85rem; transition: opacity .2s; }
+  .chat-send:hover { opacity: .8; }
+
+  /* ADMIN */
+  .admin-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.95); z-index: 9000; flex-direction: column; }
+  .admin-overlay.open { display: flex; }
+  .admin-nav { display: flex; align-items: center; gap: 0; background: var(--surface); border-bottom: 1px solid var(--border); height: 60px; }
+  .admin-logo { padding: 0 28px; font-weight: 900; font-size: 1.1rem; color: var(--accent); border-right: 1px solid var(--border); height: 100%; display: flex; align-items: center; }
+  .admin-tabs { display: flex; height: 100%; }
+  .admin-tab { padding: 0 22px; border: none; background: transparent; color: var(--text2); font-size: .82rem; font-weight: 700; cursor: pointer; border-bottom: 3px solid transparent; transition: all .2s; letter-spacing: .5px; }
+  .admin-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .admin-tab:hover:not(.active) { color: var(--text); }
+  .admin-close { margin-left: auto; margin-right: 20px; background: none; border: none; color: var(--text2); font-size: 1.2rem; cursor: pointer; }
+  .admin-body { flex: 1; overflow: auto; padding: 32px; }
+  .admin-panel { display: none; }
+  .admin-panel.active { display: block; }
+  .admin-panel h2 { font-size: 1.4rem; font-weight: 900; margin-bottom: 28px; }
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-bottom: 32px; }
+  .stat-card { background: var(--surface); border-radius: 14px; padding: 22px; border: 1px solid var(--border); }
+  .stat-card h4 { font-size: .75rem; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .stat-card .stat-num { font-size: 2rem; font-weight: 900; }
+  .stat-card .stat-change { font-size: .75rem; color: var(--success); margin-top: 4px; }
+  .data-table { width: 100%; border-collapse: collapse; }
+  .data-table th { background: var(--surface2); padding: 12px 16px; text-align: left; font-size: .75rem; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; }
+  .data-table td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: .85rem; }
+  .data-table tr:hover td { background: rgba(255,255,255,.02); }
+  .badge { padding: 3px 10px; border-radius: 100px; font-size: .7rem; font-weight: 700; }
+  .badge-success { background: rgba(16,185,129,.2); color: var(--success); }
+  .badge-warning { background: rgba(245,158,11,.2); color: var(--gold); }
+  .badge-danger { background: rgba(239,68,68,.2); color: var(--danger); }
+  .badge-info { background: rgba(0,212,255,.2); color: var(--accent); }
+  .admin-upload-area {
+    border: 2px dashed var(--border); border-radius: 14px; padding: 40px;
+    text-align: center; margin-bottom: 24px; cursor: pointer; transition: border-color .2s;
+  }
+  .admin-upload-area:hover { border-color: var(--accent); }
+  .admin-upload-area .upload-icon { font-size: 3rem; margin-bottom: 12px; }
+  .admin-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .action-btn { padding: 6px 14px; border-radius: 6px; font-size: .75rem; font-weight: 700; cursor: pointer; border: none; margin-right: 6px; }
+  .action-edit { background: rgba(0,212,255,.2); color: var(--accent); }
+  .action-del { background: rgba(239,68,68,.2); color: var(--danger); }
+  .action-view { background: rgba(16,185,129,.2); color: var(--success); }
+
+  /* LOGIN */
+  .login-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 8000; align-items: center; justify-content: center; }
+  .login-overlay.open { display: flex; }
+  .login-box { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 44px 40px; width: 380px; text-align: center; }
+  .login-box h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 6px; }
+  .login-box p { color: var(--text2); font-size: .85rem; margin-bottom: 30px; }
+  .login-icon { font-size: 3rem; margin-bottom: 20px; }
+  .error-msg { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: var(--danger); padding: 10px 14px; border-radius: 8px; font-size: .82rem; margin-bottom: 16px; display: none; }
+  .error-msg.show { display: block; }
+
+  /* FOOTER */
+  footer { background: var(--surface); border-top: 1px solid var(--border); padding: 60px 40px 30px; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; max-width: 1400px; margin: 0 auto 40px; }
+  .footer-brand h3 { font-size: 1.3rem; font-weight: 900; margin-bottom: 10px; }
+  .footer-brand p { color: var(--text2); font-size: .85rem; line-height: 1.7; }
+  .footer-col h4 { font-weight: 700; font-size: .85rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; color: var(--accent); }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-col ul a { color: var(--text2); text-decoration: none; font-size: .85rem; transition: color .2s; }
+  .footer-col ul a:hover { color: var(--text); }
+  .footer-bottom { text-align: center; color: var(--text2); font-size: .78rem; padding-top: 24px; border-top: 1px solid var(--border); max-width: 1400px; margin: 0 auto; }
+
+  /* SECTION DIVIDER */
+  .divider { height: 1px; background: var(--border); margin: 0 40px; }
+
+  /* TOAST */
+  .toast { position: fixed; bottom: 100px; right: 28px; background: var(--surface); border: 1px solid var(--success); color: var(--success); padding: 14px 22px; border-radius: 12px; font-size: .85rem; font-weight: 700; z-index: 9999; transform: translateY(20px); opacity: 0; transition: all .3s; pointer-events: none; }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .admin-form-grid { grid-template-columns: 1fr; }
+    .chat-box { width: 300px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">GS<span>·</span>Сургалт</div>
+  <ul class="nav-links">
+    <li><a href="#courses">Сургалт</a></li>
+    <li><a href="#videos">Видео</a></li>
+    <li><a href="#templates">Загварууд</a></li>
+    <li><a href="#shop">Дэлгүүр</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="btn btn-outline" onclick="openAdminLogin()">🔐 Админ</button>
+    <button class="btn btn-primary" onclick="openModal('membership')">Элсэх</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge">🎓 Монголын Тэргүүлэх Онлайн Сургалтын Платформ</div>
+    <h1>Мэдлэг. Ур Чадвар.<br><span class="grad">Ирээдүй.</span></h1>
+    <p>Word, Excel, PowerPoint, Photoshop болон олон бусад чиглэлээр мэргэжлийн сургалт авч, бэлэн загварууд татаж, өөрийн ирээдүйг бүтээ.</p>
+    <div class="hero-cta">
+      <button class="btn btn-gold" onclick="document.getElementById('courses').scrollIntoView({behavior:'smooth'})">Сургалт үзэх ↓</button>
+      <button class="btn btn-outline" onclick="document.getElementById('videos').scrollIntoView({behavior:'smooth'})">📺 Видео үзэх</button>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO SHORT SHOWCASE -->
+<section class="video-section" id="videos">
+  <div class="section-header">
+    <h2>Богино Видео <span style="color:var(--accent)">Сургалтууд</span></h2>
+    <p>Шинэ агуулга өдөр бүр нэмэгдэж байна</p>
+  </div>
+  <div class="videos-grid" id="videosGrid">
+    <!-- Динамик контент -->
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- COURSES -->
+<section class="courses-section" id="courses">
+  <div class="section-header">
+    <h2>Мэргэжлийн <span style="color:var(--accent2)">Сургалтууд</span></h2>
+    <p>Нэг удаагийн төлбөр — насан туршийн мэдлэг</p>
+  </div>
+  <div class="courses-tabs">
+    <button class="tab-btn active" onclick="filterCourses('all', this)">Бүгд</button>
+    <button class="tab-btn" onclick="filterCourses('office', this)">Office</button>
+    <button class="tab-btn" onclick="filterCourses('design', this)">Дизайн</button>
+    <button class="tab-btn" onclick="filterCourses('prog', this)">Програмчлал</button>
+    <button class="tab-btn" onclick="filterCourses('business', this)">Бизнес</button>
+  </div>
+  <div class="courses-grid" id="coursesGrid"></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- TEMPLATES -->
+<section class="templates-section" id="templates">
+  <div class="section-header">
+    <h2>Бэлэн <span style="color:var(--gold)">Загварууд</span></h2>
+    <p>Тайлан, төсөл, эссэ — төлбөр төлөөд шууд татаж ашиглана</p>
+  </div>
+  <div class="templates-grid" id="templatesGrid"></div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SHOP -->
+<section class="shop-section" id="shop">
+  <div class="section-header">
+    <h2>Онлайн <span style="color:var(--accent)">Дэлгүүр</span></h2>
+    <p>Захиалаад хүргэлтээр авна</p>
+  </div>
+  <div class="shop-grid" id="shopGrid"></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <h3>GS · Сургалт</h3>
+      <p>Монголын тэргүүлэх онлайн боловсролын платформ. Чанартай сургалт, бэлэн загварууд нэг дор.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Сургалт</h4>
+      <ul>
+        <li><a href="#">Microsoft Office</a></li>
+        <li><a href="#">Adobe Suite</a></li>
+        <li><a href="#">Програмчлал</a></li>
+        <li><a href="#">Бизнес</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Загварууд</h4>
+      <ul>
+        <li><a href="#">Тайлан</a></li>
+        <li><a href="#">Төсөл</a></li>
+        <li><a href="#">Эссэ</a></li>
+        <li><a href="#">CV</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Холбоо</h4>
+      <ul>
+        <li><a href="#">📞 99001122</a></li>
+        <li><a href="#">📧 info@gs.mn</a></li>
+        <li><a href="#">📘 Facebook</a></li>
+        <li><a href="#">📸 Instagram</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2024 GS Сургалт. Бүх эрх хуулиар хамгаалагдсан.</div>
+</footer>
+
+<!-- PAYMENT MODAL -->
+<div class="modal-overlay" id="payModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <h2 id="modalTitle">Сургалт худалдан авах</h2>
+    <div class="price-big" id="modalPrice">₮49,900</div>
+    <div class="form-group">
+      <label>Таны нэр</label>
+      <input type="text" placeholder="Бүтэн нэрээ оруулна уу">
+    </div>
+    <div class="form-group">
+      <label>Утасны дугаар</label>
+      <input type="text" placeholder="99XXXXXX">
+    </div>
+    <p style="font-size:.8rem;color:var(--text2);margin-bottom:14px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;">Төлбөрийн арга сонгох</p>
+    <div class="payment-methods">
+      <div class="pay-method selected" id="pm-bank" onclick="selectPayMethod('bank')">
+        <div class="method-icon">🏦</div>
+        <p>Дансны шилжүүлэг</p>
+      </div>
+      <div class="pay-method" id="pm-qr" onclick="selectPayMethod('qr')">
+        <div class="method-icon">📱</div>
+        <p>QR код</p>
+      </div>
+    </div>
+    <div class="bank-details show" id="bankDetails">
+      <div class="bank-row"><span>Банк:</span><span>Хаан Банк</span></div>
+      <div class="bank-row"><span>Дансны дугаар:</span><span>5274-XXXXXX</span></div>
+      <div class="bank-row"><span>Хүлээн авагч:</span><span>ГС СУРГАЛТ ХХК</span></div>
+      <div class="bank-row"><span>Гүйлгээний утга:</span><span id="txRef">ORD-001</span></div>
+    </div>
+    <div class="bank-details" id="qrDetails">
+      <div class="qr-box">
+        <div class="qr-placeholder">▦</div>
+        <p style="margin-top:10px;font-size:.78rem;color:var(--text2)">QR уншуулж төлнө үү</p>
+      </div>
+    </div>
+    <div class="upload-receipt">
+      <label for="receiptFile">📎 Гүйлгээний баримт хавсаргах (заавал биш)<br><span style="color:var(--text2);font-size:.72rem">JPG, PNG, PDF</span></label>
+      <input type="file" id="receiptFile" accept=".jpg,.jpeg,.png,.pdf">
+    </div>
+    <button class="btn btn-gold" style="width:100%;margin-top:20px;padding:14px" onclick="submitOrder()">✅ Захиалга батлах</button>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div class="login-overlay" id="adminLogin">
+  <div class="login-box">
+    <div class="login-icon">🔐</div>
+    <h2>Админ Нэвтрэх</h2>
+    <p>Зөвхөн зөвшөөрөгдсөн хэрэглэгчид</p>
+    <div class="error-msg" id="loginError">Нэвтрэх нэр эсвэл нууц үг буруу байна!</div>
+    <div class="form-group">
+      <label>Нэвтрэх нэр</label>
+      <input type="text" id="adminUser" placeholder="admin">
+    </div>
+    <div class="form-group">
+      <label>Нууц үг</label>
+      <input type="password" id="adminPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doAdminLogin()">
+    </div>
+    <button class="btn btn-primary" style="width:100%;padding:12px;margin-top:8px" onclick="doAdminLogin()">Нэвтрэх →</button>
+    <button style="margin-top:16px;background:none;border:none;color:var(--text2);cursor:pointer;font-size:.82rem" onclick="document.getElementById('adminLogin').classList.remove('open')">Буцах</button>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div class="admin-overlay" id="adminPanel">
+  <div class="admin-nav">
+    <div class="admin-logo">⚙️ GS Admin</div>
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchAdminTab('dashboard', this)">Хяналтын самбар</button>
+      <button class="admin-tab" onclick="switchAdminTab('orders', this)">Захиалга</button>
+      <button class="admin-tab" onclick="switchAdminTab('courses-admin', this)">Сургалт нэмэх</button>
+      <button class="admin-tab" onclick="switchAdminTab('videos-admin', this)">Видео нэмэх</button>
+      <button class="admin-tab" onclick="switchAdminTab('templates-admin', this)">Загвар нэмэх</button>
+      <button class="admin-tab" onclick="switchAdminTab('shop-admin', this)">Дэлгүүр</button>
+      <button class="admin-tab" onclick="switchAdminTab('users-admin', this)">Хэрэглэгчид</button>
+    </div>
+    <button class="admin-close" onclick="document.getElementById('adminPanel').classList.remove('open')">✕ Гарах</button>
+  </div>
+  <div class="admin-body">
+
+    <!-- DASHBOARD -->
+    <div class="admin-panel active" id="panel-dashboard">
+      <h2>📊 Хяналтын Самбар</h2>
+      <div class="stats-row">
+        <div class="stat-card"><h4>Нийт захиалга</h4><div class="stat-num">247</div><div class="stat-change">↑ +12 өнөөдөр</div></div>
+        <div class="stat-card"><h4>Нийт орлого</h4><div class="stat-num" style="color:var(--gold)">₮12.4M</div><div class="stat-change">↑ +₮890K өнөөдөр</div></div>
+        <div class="stat-card"><h4>Хэрэглэгч</h4><div class="stat-num">1,832</div><div class="stat-change">↑ +34 энэ долоо хоногт</div></div>
+        <div class="stat-card"><h4>Хүлээгдэж буй</h4><div class="stat-num" style="color:var(--gold)">18</div><div class="stat-change">Баталгаажуулах шаардлагатай</div></div>
+        <div class="stat-card"><h4>Сургалт</h4><div class="stat-num">24</div><div class="stat-change">6 ангилал</div></div>
+        <div class="stat-card"><h4>Загвар</h4><div class="stat-num">58</div><div class="stat-change">↑ +3 энэ сард</div></div>
+      </div>
+      <h3 style="margin-bottom:18px;font-size:1rem">Сүүлийн захиалгууд</h3>
+      <table class="data-table">
+        <tr><th>ID</th><th>Хэрэглэгч</th><th>Бүтээгдэхүүн</th><th>Дүн</th><th>Огноо</th><th>Төлөв</th></tr>
+        <tr><td>#247</td><td>Б. Мөнхбаяр</td><td>Excel Мастер Курс</td><td>₮49,900</td><td>2024-01-15</td><td><span class="badge badge-success">Баталгаажсан</span></td></tr>
+        <tr><td>#246</td><td>Д. Энхтуяа</td><td>Photoshop Загвар (3ш)</td><td>₮29,700</td><td>2024-01-15</td><td><span class="badge badge-warning">Хүлээгдэж буй</span></td></tr>
+        <tr><td>#245</td><td>Г. Батболд</td><td>Word Тайлан Загвар</td><td>₮9,900</td><td>2024-01-14</td><td><span class="badge badge-success">Баталгаажсан</span></td></tr>
+        <tr><td>#244</td><td>Н. Солонго</td><td>Python Эхлэгчдэд</td><td>₮79,900</td><td>2024-01-14</td><td><span class="badge badge-success">Баталгаажсан</span></td></tr>
+        <tr><td>#243</td><td>Т. Болормаа</td><td>Ноутбук (Lenovo)</td><td>₮890,000</td><td>2024-01-13</td><td><span class="badge badge-info">Хүргэлтэнд</span></td></tr>
+      </table>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="admin-panel" id="panel-orders">
+      <h2>📦 Бүх Захиалга</h2>
+      <div style="display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+        <select style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-family:inherit">
+          <option>Бүх төлөв</option>
+          <option>Хүлээгдэж буй</option>
+          <option>Баталгаажсан</option>
+          <option>Хүргэлтэнд</option>
+        </select>
+        <input type="text" placeholder="🔍 Хайх..." style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 14px;border-radius:8px;font-family:inherit;flex:1;min-width:200px">
+        <button class="btn btn-primary">Хайх</button>
+      </div>
+      <table class="data-table">
+        <tr><th>ID</th><th>Хэрэглэгч</th><th>Утас</th><th>Бүтээгдэхүүн</th><th>Дүн</th><th>Огноо</th><th>Төлөв</th><th>Үйлдэл</th></tr>
+        <tr><td>#247</td><td>Б. Мөнхбаяр</td><td>9911-2233</td><td>Excel Мастер</td><td>₮49,900</td><td>2024-01-15</td><td><span class="badge badge-success">Баталгаажсан</span></td><td><button class="action-btn action-view">Харах</button><button class="action-btn action-edit">Засах</button></td></tr>
+        <tr><td>#246</td><td>Д. Энхтуяа</td><td>9944-5566</td><td>PS Загвар</td><td>₮29,700</td><td>2024-01-15</td><td><span class="badge badge-warning">Хүлээгдэж буй</span></td><td><button class="action-btn action-view" onclick="showToast('Захиалга батлагдлаа!')">✅ Батлах</button><button class="action-btn action-del">Устгах</button></td></tr>
+        <tr><td>#245</td><td>Г. Батболд</td><td>9977-8899</td><td>Word Загвар</td><td>₮9,900</td><td>2024-01-14</td><td><span class="badge badge-success">Баталгаажсан</span></td><td><button class="action-btn action-view">Харах</button></td></tr>
+        <tr><td>#244</td><td>Н. Солонго</td><td>9922-1144</td><td>Python курс</td><td>₮79,900</td><td>2024-01-14</td><td><span class="badge badge-success">Баталгаажсан</span></td><td><button class="action-btn action-view">Харах</button></td></tr>
+        <tr><td>#243</td><td>Т. Болормаа</td><td>9955-3377</td><td>Lenovo ноутбук</td><td>₮890,000</td><td>2024-01-13</td><td><span class="badge badge-info">Хүргэлтэнд</span></td><td><button class="action-btn action-edit">Хүргэсэн</button></td></tr>
+      </table>
+    </div>
+
+    <!-- ADD COURSE -->
+    <div class="admin-panel" id="panel-courses-admin">
+      <h2>📚 Сургалт Нэмэх / Засах</h2>
+      <div class="admin-form-grid">
+        <div>
+          <div class="form-group"><label>Сургалтын нэр</label><input type="text" placeholder="жш. Excel Мастер Курс"></div>
+          <div class="form-group"><label>Ангилал</label><select><option>Office</option><option>Дизайн</option><option>Програмчлал</option><option>Бизнес</option></select></div>
+          <div class="form-group"><label>Үнэ (₮)</label><input type="number" placeholder="49900"></div>
+          <div class="form-group"><label>Хичээлийн тоо</label><input type="number" placeholder="24"></div>
+          <div class="form-group"><label>Тайлбар</label><textarea rows="4" placeholder="Сургалтын дэлгэрэнгүй тайлбар..."></textarea></div>
+          <button class="btn btn-primary" onclick="showToast('Сургалт амжилттай нэмэгдлээ!')">➕ Нэмэх</button>
+        </div>
+        <div>
+          <div class="form-group"><label>Сургалтын зураг</label>
+            <div class="admin-upload-area" onclick="showToast('Зураг сонгох...')">
+              <div class="upload-icon">🖼️</div>
+              <p style="font-size:.85rem;color:var(--text2)">Зураг оруулахын тулд дарна уу</p>
+            </div>
+          </div>
+          <div class="form-group"><label>Видео линк (YouTube / Drive)</label><input type="text" placeholder="https://..."></div>
+          <div class="form-group"><label>Үнэгүй эсвэл төлбөртэй</label>
+            <select><option>Төлбөртэй</option><option>Үнэгүй</option></select>
+          </div>
+        </div>
+      </div>
+      <hr style="border-color:var(--border);margin:32px 0">
+      <h3 style="margin-bottom:16px;font-size:1rem">Одоо байгаа сургалтууд</h3>
+      <table class="data-table">
+        <tr><th>Нэр</th><th>Ангилал</th><th>Үнэ</th><th>Хичээл</th><th>Үйлдэл</th></tr>
+        <tr><td>Excel Мастер Курс</td><td>Office</td><td>₮49,900</td><td>24</td><td><button class="action-btn action-edit">Засах</button><button class="action-btn action-del">Устгах</button></td></tr>
+        <tr><td>Photoshop Pro</td><td>Дизайн</td><td>₮69,900</td><td>32</td><td><button class="action-btn action-edit">Засах</button><button class="action-btn action-del">Устгах</button></td></tr>
+        <tr><td>Python Эхлэгчдэд</td><td>Програмчлал</td><td>₮79,900</td><td>40</td><td><button class="action-btn action-edit">Засах</button><button class="action-btn action-del">Устгах</button></td></tr>
+      </table>
+    </div>
+
+    <!-- ADD VIDEO -->
+    <div class="admin-panel" id="panel-videos-admin">
+      <h2>🎬 Видео Нэмэх / Засах</h2>
+      <div class="admin-form-grid">
+        <div>
+          <div class="form-group"><label>Видео гарчиг</label><input type="text" placeholder="жш. Excel VLOOKUP функц"></div>
+          <div class="form-group"><label>Ангилал</label><select><option>Office</option><option>Дизайн</option><option>Програмчлал</option></select></div>
+          <div class="form-group"><label>YouTube / Drive линк</label><input type="text" placeholder="https://youtu.be/..."></div>
+          <div class="form-group"><label>Видео урт (мин)</label><input type="number" placeholder="15"></div>
+          <div class="form-group"><label>Тайлбар</label><textarea rows="3" placeholder="Видеоны тухай..."></textarea></div>
+          <button class="btn btn-primary" onclick="showToast('Видео амжилттай нэмэгдлээ!')">➕ Нэмэх</button>
+        </div>
+        <div>
+          <div class="form-group"><label>Thumbnail зураг</label>
+            <div class="admin-upload-area" onclick="showToast('Зураг сонгох...')">
+              <div class="upload-icon">📸</div>
+              <p style="font-size:.85rem;color:var(--text2)">Thumbnail оруулах</p>
+            </div>
+          </div>
+          <div class="form-group"><label>Хандалтын төвшин</label>
+            <select><option>Бүгдэд нээлттэй</option><option>Зөвхөн гишүүдэд</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD TEMPLATE -->
+    <div class="admin-panel" id="panel-templates-admin">
+      <h2>📄 Загвар Нэмэх / Засах</h2>
+      <div class="admin-form-grid">
+        <div>
+          <div class="form-group"><label>Загварын нэр</label><input type="text" placeholder="жш. Бизнес Тайлан 2024"></div>
+          <div class="form-group"><label>Төрөл</label><select><option>Тайлан</option><option>Төсөл</option><option>Эссэ</option><option>CV</option><option>Илтгэл</option></select></div>
+          <div class="form-group"><label>Файлын формат</label><select><option>DOCX</option><option>XLSX</option><option>PPTX</option><option>PDF</option></select></div>
+          <div class="form-group"><label>Үнэ (₮)</label><input type="number" placeholder="9900"></div>
+          <div class="form-group"><label>Тайлбар</label><textarea rows="3" placeholder="Загварын тухай..."></textarea></div>
+          <button class="btn btn-primary" onclick="showToast('Загвар амжилттай нэмэгдлээ!')">➕ Нэмэх</button>
+        </div>
+        <div>
+          <div class="form-group"><label>Файл байршуулах</label>
+            <div class="admin-upload-area" onclick="showToast('Файл сонгох...')">
+              <div class="upload-icon">📁</div>
+              <p style="font-size:.85rem;color:var(--text2)">DOCX, XLSX, PPTX, PDF</p>
+            </div>
+          </div>
+          <div class="form-group"><label>Preview зураг</label>
+            <div class="admin-upload-area" onclick="showToast('Зураг сонгох...')">
+              <div class="upload-icon">🖼️</div>
+              <p style="font-size:.85rem;color:var(--text2)">Preview зураг</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHOP ADMIN -->
+    <div class="admin-panel" id="panel-shop-admin">
+      <h2>🛍️ Дэлгүүр Удирдлага</h2>
+      <div class="admin-form-grid">
+        <div>
+          <div class="form-group"><label>Бараа нэр</label><input type="text" placeholder="жш. Lenovo IdeaPad 5"></div>
+          <div class="form-group"><label>Ангилал</label><select><option>Компьютер</option><option>Хэвлэгч</option><option>Дагалдах хэрэгсэл</option><option>Ном</option></select></div>
+          <div class="form-group"><label>Үнэ (₮)</label><input type="number" placeholder="890000"></div>
+          <div class="form-group"><label>Нөөц (ширхэг)</label><input type="number" placeholder="10"></div>
+          <div class="form-group"><label>Хүргэлтийн хугацаа</label><input type="text" placeholder="жш. 1-3 хоног"></div>
+          <div class="form-group"><label>Тайлбар</label><textarea rows="3" placeholder="Барааны тухай..."></textarea></div>
+          <button class="btn btn-primary" onclick="showToast('Бараа амжилттай нэмэгдлээ!')">➕ Нэмэх</button>
+        </div>
+        <div>
+          <div class="form-group"><label>Барааны зураг</label>
+            <div class="admin-upload-area" onclick="showToast('Зураг сонгох...')">
+              <div class="upload-icon">📦</div>
+              <p style="font-size:.85rem;color:var(--text2)">Барааны зураг</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="admin-panel" id="panel-users-admin">
+      <h2>👥 Хэрэглэгчид</h2>
+      <table class="data-table">
+        <tr><th>ID</th><th>Нэр</th><th>Утас</th><th>Захиалга</th><th>Нийт дүн</th><th>Бүртгэлийн огноо</th><th>Үйлдэл</th></tr>
+        <tr><td>001</td><td>Б. Мөнхбаяр</td><td>9911-2233</td><td>5</td><td>₮189,500</td><td>2024-01-01</td><td><button class="action-btn action-view">Харах</button></td></tr>
+        <tr><td>002</td><td>Д. Энхтуяа</td><td>9944-5566</td><td>3</td><td>₮89,700</td><td>2024-01-03</td><td><button class="action-btn action-view">Харах</button></td></tr>
+        <tr><td>003</td><td>Г. Батболд</td><td>9977-8899</td><td>8</td><td>₮312,400</td><td>2024-01-05</td><td><button class="action-btn action-view">Харах</button></td></tr>
+        <tr><td>004</td><td>Н. Солонго</td><td>9922-1144</td><td>2</td><td>₮129,800</td><td>2024-01-08</td><td><button class="action-btn action-view">Харах</button></td></tr>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- CHAT WIDGET -->
+<div class="chat-widget">
+  <div class="chat-box" id="chatBox">
+    <div class="chat-header">
+      <div>
+        <h4>🤖 GS Туслагч</h4>
+        <p>Онлайн • Яг одоо хариулна</p>
+      </div>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg bot">Сайн байна уу! GS Сургалтад тавтай морилно уу. Би танд ямар зүйлд туслах вэ? 😊</div>
+    </div>
+    <div class="chat-quick">
+      <button class="quick-btn" onclick="sendQuick('Сургалтын жагсаалт')">📚 Сургалтууд</button>
+      <button class="quick-btn" onclick="sendQuick('Загварын үнэ')">📄 Загвар</button>
+      <button class="quick-btn" onclick="sendQuick('Төлбөрийн арга')">💳 Төлбөр</button>
+      <button class="quick-btn" onclick="sendQuick('Холбоо барих')">📞 Холбоо</button>
+    </div>
+    <div class="chat-input-row">
+      <input class="chat-input" id="chatInput" placeholder="Асуулт бичнэ үү..." onkeydown="if(event.key==='Enter')sendChat()">
+      <button class="chat-send" onclick="sendChat()">➤</button>
+    </div>
+  </div>
+  <button class="chat-toggle" onclick="toggleChat()">💬</button>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ Амжилттай!</div>
+
+<script>
+// ====== DATA ======
+const courses = [
+  { id:1, cat:'office', icon:'📊', name:'Microsoft Excel Мастер', desc:'VLOOKUP, Pivot Table, макро, дата шинжилгээ бүрэн эзэмшинэ.', price:49900, lessons:24 },
+  { id:2, cat:'office', icon:'📝', name:'Microsoft Word Дэвшилтэт', desc:'Мэргэжлийн баримт бичиг, тайлан, хүснэгт боловсруулах.', price:39900, lessons:18 },
+  { id:3, cat:'office', icon:'📊', name:'PowerPoint Pro Илтгэл', desc:'Сонирхолтой илтгэл хийх, анимэйшн, дизайн хоёрдугаар шат.', price:44900, lessons:20 },
+  { id:4, cat:'design', icon:'🎨', name:'Adobe Photoshop Pro', desc:'Зураг засварлах, постер хийх, мэргэжлийн ур чадвар.', price:69900, lessons:32 },
+  { id:5, cat:'design', icon:'🎯', name:'Adobe Illustrator', desc:'Вектор зураглал, лого хийх, брэнд загварлалт.', price:64900, lessons:28 },
+  { id:6, cat:'prog', icon:'🐍', name:'Python Эхлэгчдэд', desc:'Програмчлалын үндэс, автоматжуулалт, өгөгдлийн шинжилгээ.', price:79900, lessons:40 },
+  { id:7, cat:'prog', icon:'🌐', name:'Вэб хөгжүүлэлт', desc:'HTML, CSS, JavaScript — шинэхэн хөгжүүлэгч болоорой.', price:89900, lessons:48 },
+  { id:8, cat:'business', icon:'💼', name:'Бизнес Удирдлага', desc:'Төсөл удирдлага, багийн ажил, стратегийн төлөвлөлт.', price:59900, lessons:22 },
+  { id:9, cat:'business', icon:'📈', name:'Маркетинг & SMM', desc:'Сошиал медиа маркетинг, брэнд бүтээх, онлайн зар сурталчилгаа.', price:54900, lessons:26 },
+];
+
+const videos = [
+  { cat:'Excel', title:'Excel VLOOKUP функцийг зөв ашиглах нь', desc:'5 минутад VLOOKUP эзэмшье', mins:'5:30', color:'#1a472a' },
+  { cat:'Word', title:'Word-д мэргэжлийн CV хийх', desc:'Ажилд орох баримт бичиг', mins:'8:15', color:'#1a2a47' },
+  { cat:'Photoshop', title:'Photoshop-д постер хийх үндэс', desc:'Шинэхэн хэрэглэгчдэд', mins:'12:40', color:'#2a1a47' },
+  { cat:'PowerPoint', title:'PowerPoint Анимэйшн ашиглах', desc:'Сонирхолтой илтгэл хий', mins:'7:20', color:'#471a1a' },
+  { cat:'Python', title:'Python циклийн үндэс', desc:'Эхлэгчдэд зориулсан хичээл', mins:'15:00', color:'#1a3a47' },
+  { cat:'Excel', title:'Excel Pivot Table хийх', desc:'Өгөгдлөө задлан шинжил', mins:'9:45', color:'#1a472a' },
+];
+
+const templates = [
+  { icon:'📋', name:'Бизнес Тайлан 2024', type:'Тайлан', format:'DOCX', price:9900 },
+  { icon:'🎯', name:'Төслийн Санал', type:'Төсөл', format:'DOCX', price:12900 },
+  { icon:'📝', name:'Академик Эссэ', type:'Эссэ', format:'DOCX', price:7900 },
+  { icon:'👤', name:'Мэргэжлийн CV', type:'CV', format:'DOCX', price:14900 },
+  { icon:'📊', name:'Санхүүгийн Тайлан', type:'Тайлан', format:'XLSX', price:19900 },
+  { icon:'🎤', name:'Ажил Хэрэгч Илтгэл', type:'Илтгэл', format:'PPTX', price:17900 },
+  { icon:'📑', name:'Гэрээний Загвар', type:'Тайлан', format:'DOCX', price:24900 },
+  { icon:'🗂️', name:'Маркетингийн Төлөвлөгөө', type:'Төсөл', format:'DOCX', price:16900 },
+];
+
+const shopItems = [
+  { icon:'💻', name:'Lenovo IdeaPad 5', desc:'i5 12th Gen, 16GB RAM, 512GB SSD, 15.6" FHD', price:890000, delivery:'1-3 хоног' },
+  { icon:'🖨️', name:'HP LaserJet Pro', desc:'Монохром лазер хэвлэгч, WIFI, Duplex', price:290000, delivery:'2-4 хоног' },
+  { icon:'🖱️', name:'Logitech MX Master 3', desc:'Утасгүй хулгана, Ergonomic дизайн', price:89000, delivery:'Өнөөдөр' },
+  { icon:'⌨️', name:'Mechanical Keyboard', desc:'RGB, Blue Switch, USB-C', price:79000, delivery:'Өнөөдөр' },
+];
+
+// ====== RENDER ======
+function renderVideos() {
+  const g = document.getElementById('videosGrid');
+  g.innerHTML = videos.map(v => `
+    <div class="video-card" onclick="openModal('${v.title}', '₮Үнэгүй')">
+      <div class="video-thumb" style="background:${v.color}20">
+        <div class="thumb-gradient" style="background:linear-gradient(135deg,${v.color}99,rgba(0,212,255,.2))"></div>
+        <div class="play-btn">▶</div>
+      </div>
+      <div class="video-badge">${v.cat}</div>
+      <div class="video-info">
+        <h3>${v.title}</h3>
+        <p>${v.desc} • ${v.mins}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCourses(cat='all') {
+  const filtered = cat === 'all' ? courses : courses.filter(c => c.cat === cat);
+  document.getElementById('coursesGrid').innerHTML = filtered.map(c => `
+    <div class="course-card">
+      <div class="course-icon">${c.icon}</div>
+      <h3>${c.name}</h3>
+      <p>${c.desc}</p>
+      <div class="course-meta">
+        <span class="course-price">₮${c.price.toLocaleString()}</span>
+        <span class="course-lessons">📖 ${c.lessons} хичээл</span>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="openModal('${c.name}', '₮${c.price.toLocaleString()}')">Худалдан авах</button>
+    </div>
+  `).join('');
+}
+
+function renderTemplates() {
+  document.getElementById('templatesGrid').innerHTML = templates.map(t => `
+    <div class="template-card">
+      <div class="template-preview">${t.icon}</div>
+      <div class="template-info">
+        <h3>${t.name}</h3>
+        <p>${t.format} формат • Татаж авах</p>
+        <div class="template-footer">
+          <span class="template-type">${t.type}</span>
+          <span class="template-price">₮${t.price.toLocaleString()}</span>
+        </div>
+        <button class="btn btn-gold" style="width:100%;margin-top:12px;padding:8px" onclick="openModal('${t.name}', '₮${t.price.toLocaleString()}')">⬇ Татах</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderShop() {
+  document.getElementById('shopGrid').innerHTML = shopItems.map(s => `
+    <div class="shop-card">
+      <div class="shop-img">${s.icon}</div>
+      <div class="shop-info">
+        <h3>${s.name}</h3>
+        <p>${s.desc}</p>
+        <div class="shop-footer">
+          <span class="shop-price">₮${s.price.toLocaleString()}</span>
+          <span class="delivery-badge">🚚 ${s.delivery}</span>
+        </div>
+        <button class="btn btn-primary" style="width:100%;margin-top:12px" onclick="openModal('${s.name}', '₮${s.price.toLocaleString()}')">Захиалах</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterCourses(cat, el) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderCourses(cat);
+}
+
+// ====== MODAL ======
+let currentItem = '';
+function openModal(title, price) {
+  if (title === 'membership') { title = 'Гишүүнчлэл'; price = '₮99,900/жил'; }
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalPrice').textContent = price;
+  document.getElementById('txRef').textContent = 'ORD-' + Math.floor(Math.random()*1000).toString().padStart(3,'0');
+  document.getElementById('payModal').classList.add('open');
+}
+function closeModal() { document.getElementById('payModal').classList.remove('open'); }
+document.getElementById('payModal').addEventListener('click', function(e){ if(e.target===this) closeModal(); });
+
+function selectPayMethod(m) {
+  document.querySelectorAll('.pay-method').forEach(el => el.classList.remove('selected'));
+  document.getElementById('pm-'+m).classList.add('selected');
+  document.getElementById('bankDetails').classList.toggle('show', m==='bank');
+  document.getElementById('qrDetails').classList.toggle('show', m==='qr');
+}
+
+function submitOrder() {
+  closeModal();
+  showToast('🎉 Захиалга амжилттай! Баталгаажуулалт хүлээнэ үү.');
+}
+
+// ====== ADMIN ======
+const ADMIN_USER = 'admin';
+const ADMIN_PASS = 'GS@2024!';
+
+function openAdminLogin() { document.getElementById('adminLogin').classList.add('open'); }
+function doAdminLogin() {
+  const u = document.getElementById('adminUser').value.trim();
+  const p = document.getElementById('adminPass').value;
+  if (u === ADMIN_USER && p === ADMIN_PASS) {
+    document.getElementById('adminLogin').classList.remove('open');
+    document.getElementById('adminPanel').classList.add('open');
+    document.getElementById('loginError').classList.remove('show');
+  } else {
+    document.getElementById('loginError').classList.add('show');
+    document.getElementById('adminPass').value = '';
+  }
+}
+
+function switchAdminTab(id, el) {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-'+id).classList.add('active');
+}
+
+// ====== CHAT ======
+function toggleChat() {
+  document.getElementById('chatBox').classList.toggle('open');
+}
+
+const chatResponses = {
+  'сургалт': 'Бидэнд 24+ мэргэжлийн сургалт байна! Excel, Word, PowerPoint, Photoshop, Python болон бусад. Нэг удаагийн төлбөртэй.',
+  'загвар': 'Бэлэн загваруудыг ₮7,900-аас эхлэн татаж авч болно. DOCX, XLSX, PPTX форматуудаар байна.',
+  'төлбөр': 'Дансны шилжүүлэг эсвэл QR кодоор төлбөр хийнэ. Нэг удаагийн төлбөр, насан туршийн хандалт!',
+  'холбоо': '📞 99001122 | 📧 info@gs.mn | Facebook: /GSSurgalt',
+  'default': 'Танд туслахдаа баяртай байна! Дэлгэрэнгүй мэдлэлийг дансандаа бүртгүүлэн авна уу. 😊'
+};
+
+function sendQuick(msg) {
+  appendMsg(msg, 'user');
+  setTimeout(() => {
+    const key = Object.keys(chatResponses).find(k => msg.toLowerCase().includes(k)) || 'default';
+    appendMsg(chatResponses[key], 'bot');
+  }, 600);
+}
+
+function sendChat() {
+  const inp = document.getElementById('chatInput');
+  const msg = inp.value.trim();
+  if (!msg) return;
+  inp.value = '';
+  appendMsg(msg, 'user');
+  setTimeout(() => {
+    const key = Object.keys(chatResponses).find(k => msg.toLowerCase().includes(k)) || 'default';
+    appendMsg(chatResponses[key], 'bot');
+  }, 700);
+}
+
+function appendMsg(text, type) {
+  const c = document.getElementById('chatMessages');
+  const d = document.createElement('div');
+  d.className = 'msg ' + type;
+  d.textContent = text;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+
+// ====== TOAST ======
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ====== INIT ======
+renderVideos();
+renderCourses();
+renderTemplates();
+renderShop();
+</script>
+</body>
+</html>
