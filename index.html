@@ -51,6 +51,19 @@
     align-items: center; justify-content: center;
     text-align: center; padding: 100px 20px 60px; position: relative; overflow: hidden;
   }
+  .hero-video-bg {
+    position: absolute; inset: 0; z-index: 0; overflow: hidden;
+  }
+  .hero-video-bg video {
+    width: 100%; height: 100%; object-fit: cover; opacity: 0.35;
+  }
+  .hero-video-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to bottom, rgba(10,10,15,0.5) 0%, rgba(10,10,15,0.2) 50%, rgba(10,10,15,0.7) 100%);
+  }
+  .no-video-bg {
+    position: absolute; inset: 0; z-index: 0;
+  }
   .hero-bg {
     position: absolute; inset: 0; z-index: 0;
     background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(124,58,237,.18) 0%, transparent 70%),
@@ -200,6 +213,18 @@
   @media(max-width:600px){ .admin-form{ grid-template-columns:1fr; } }
   .upload-area { border: 2px dashed var(--border); border-radius: 14px; padding: 30px; text-align: center; cursor: pointer; transition: border-color .2s; }
   .upload-area:hover { border-color: var(--accent); }
+  .upload-area input[type=file] { display: none; }
+  .upload-preview { margin-top: 14px; border-radius: 10px; overflow: hidden; max-height: 200px; display: none; }
+  .upload-preview img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; }
+  .upload-preview video { width: 100%; max-height: 200px; border-radius: 10px; }
+  .upload-preview.show { display: block; }
+  .media-thumb { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.3); border-radius: 8px; padding: 6px 12px; font-size: .78rem; color: var(--accent); margin-top: 10px; }
+  .course-card-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 10px; margin-bottom: 14px; display: none; }
+  .course-card-img.show { display: block; }
+  .template-preview-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+  .shop-img-real { width: 100%; aspect-ratio: 1; object-fit: cover; }
+  .admin-video-tab { background: rgba(0,212,255,.08); border: 1px solid rgba(0,212,255,.2); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .admin-video-tab h3 { font-size: .95rem; font-weight: 700; margin-bottom: 14px; color: var(--accent); }
 
   /* LOGIN */
   .login-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 8000; align-items: center; justify-content: center; }
@@ -247,8 +272,12 @@
 </nav>
 
 <section class="hero">
-  <div class="hero-bg"></div>
-  <div class="hero-grid"></div>
+  <div class="hero-video-bg" id="heroBgContainer">
+    <div class="no-video-bg">
+      <div class="hero-bg"></div>
+      <div class="hero-grid"></div>
+    </div>
+  </div>
   <div class="hero-content">
     <div class="hero-badge">🎓 Монголын Тэргүүлэх Онлайн Сургалт</div>
     <h1>Мэдлэг. Ур Чадвар.<br><span class="grad">Ирээдүй.</span></h1>
@@ -314,10 +343,10 @@
     </div>
     <div class="footer-col">
       <h4>Холбоо</h4>
-      <ul><li>📞 99001122</li><li>📧 info@gs.mn</li><li>📘 Facebook</li><li>📸 Instagram</li></ul>
+      <ul><li>📧 info@gs.mn</li><li>📘 Facebook</li><li>📸 Instagram</li></ul>
     </div>
   </div>
-  <div class="footer-bottom">© 2024 GS Сургалт. Бүх эрх хуулиар хамгаалагдсан.</div>
+  <div class="footer-bottom">© 2026 GS Сургалт. Бүх эрх хуулиар хамгаалагдсан.</div>
 </footer>
 
 <!-- PAYMENT MODAL -->
@@ -374,6 +403,7 @@
     <div class="admin-tabs">
       <button class="admin-tab active" onclick="switchTab('dashboard',this)">Хяналт</button>
       <button class="admin-tab" onclick="switchTab('orders',this)">Захиалга</button>
+      <button class="admin-tab" onclick="switchTab('hero-video',this)">🎬 Нүүр видео</button>
       <button class="admin-tab" onclick="switchTab('add-course',this)">Сургалт+</button>
       <button class="admin-tab" onclick="switchTab('add-template',this)">Загвар+</button>
       <button class="admin-tab" onclick="switchTab('add-shop',this)">Бараа+</button>
@@ -401,6 +431,29 @@
       <div id="allOrdersList"><div class="loading">⏳ Ачааллаж байна...</div></div>
     </div>
 
+    <!-- HERO VIDEO -->
+    <div class="admin-panel" id="panel-hero-video">
+      <h2>🎬 Нүүр Хуудасны Видео</h2>
+      <div class="admin-video-tab">
+        <h3>Арын видео оруулах</h3>
+        <p style="color:var(--text2);font-size:.83rem;margin-bottom:16px">Нүүр хуудасны ард тоглогдох видео файл оруулна уу. MP4 формат дэмжигдэнэ.</p>
+        <div class="upload-area" onclick="document.getElementById('heroVideoInput').click()">
+          <div style="font-size:3rem;margin-bottom:12px">🎬</div>
+          <p style="font-weight:700;margin-bottom:6px">Видео файл сонгох</p>
+          <p style="color:var(--text2);font-size:.78rem">MP4, WebM, OGG • Макс 200MB</p>
+          <input type="file" id="heroVideoInput" accept="video/*" onchange="previewHeroVideo(this)">
+        </div>
+        <div class="upload-preview" id="heroVideoPreview">
+          <video id="heroVideoEl" controls muted loop autoplay></video>
+        </div>
+        <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="applyHeroVideo()">✅ Нүүр хуудсанд тохируулах</button>
+          <button class="btn btn-outline" onclick="removeHeroVideo()" style="border-color:var(--danger);color:var(--danger)">🗑️ Видео арилгах</button>
+        </div>
+        <div id="heroVideoStatus" style="margin-top:12px;font-size:.82rem;color:var(--text2)"></div>
+      </div>
+    </div>
+
     <!-- ADD COURSE -->
     <div class="admin-panel" id="panel-add-course">
       <h2>📚 Сургалт Нэмэх</h2>
@@ -414,6 +467,15 @@
           <div class="form-group"><label>Хичээлийн тоо</label><input type="number" id="cLessons" placeholder="24"></div>
           <div class="form-group"><label>Emoji дүрс</label><input type="text" id="cIcon" placeholder="📊"></div>
           <div class="form-group"><label>Тайлбар</label><textarea id="cDesc" rows="3" placeholder="Сургалтын тайлбар..."></textarea></div>
+          <div class="form-group"><label>Зураг / Бичлэг оруулах</label>
+            <div class="upload-area" onclick="document.getElementById('cMediaInput').click()">
+              <div style="font-size:2rem;margin-bottom:8px">📎</div>
+              <p style="font-size:.82rem;font-weight:700">Зураг эсвэл бичлэг сонгох</p>
+              <p style="font-size:.72rem;color:var(--text2)">JPG, PNG, MP4 дэмжигдэнэ</p>
+              <input type="file" id="cMediaInput" accept="image/*,video/*" onchange="previewCourseMedia(this)">
+            </div>
+            <div class="upload-preview" id="cMediaPreview"></div>
+          </div>
           <button class="btn btn-primary" onclick="addCourse()">➕ Нэмэх</button>
         </div>
         <div>
@@ -438,6 +500,15 @@
           <div class="form-group"><label>Үнэ (₮)</label><input type="number" id="tPrice" placeholder="9900"></div>
           <div class="form-group"><label>Emoji дүрс</label><input type="text" id="tIcon" placeholder="📋"></div>
           <div class="form-group"><label>Татах линк (Google Drive)</label><input type="text" id="tLink" placeholder="https://drive.google.com/..."></div>
+          <div class="form-group"><label>Урьдчилан харах зураг оруулах</label>
+            <div class="upload-area" onclick="document.getElementById('tImgInput').click()">
+              <div style="font-size:2rem;margin-bottom:8px">🖼️</div>
+              <p style="font-size:.82rem;font-weight:700">Зураг сонгох</p>
+              <p style="font-size:.72rem;color:var(--text2)">JPG, PNG дэмжигдэнэ</p>
+              <input type="file" id="tImgInput" accept="image/*" onchange="previewTemplateImg(this)">
+            </div>
+            <div class="upload-preview" id="tImgPreview"></div>
+          </div>
           <button class="btn btn-primary" onclick="addTemplate()">➕ Нэмэх</button>
         </div>
         <div>
@@ -457,6 +528,15 @@
           <div class="form-group"><label>Үнэ (₮)</label><input type="number" id="sPrice" placeholder="890000"></div>
           <div class="form-group"><label>Хүргэлт</label><input type="text" id="sDelivery" placeholder="1-3 хоног"></div>
           <div class="form-group"><label>Emoji дүрс</label><input type="text" id="sIcon" placeholder="💻"></div>
+          <div class="form-group"><label>Барааны зураг оруулах</label>
+            <div class="upload-area" onclick="document.getElementById('sImgInput').click()">
+              <div style="font-size:2rem;margin-bottom:8px">🖼️</div>
+              <p style="font-size:.82rem;font-weight:700">Зураг сонгох</p>
+              <p style="font-size:.72rem;color:var(--text2)">JPG, PNG дэмжигдэнэ</p>
+              <input type="file" id="sImgInput" accept="image/*" onchange="previewShopImg(this)">
+            </div>
+            <div class="upload-preview" id="sImgPreview"></div>
+          </div>
           <button class="btn btn-primary" onclick="addShopItem()">➕ Нэмэх</button>
         </div>
         <div>
@@ -634,7 +714,7 @@ function getDefaultCourses() {
 }
 function getDefaultTemplates() {
   return [
-    {id:'t1', icon:'📋', name:'Бизнес Тайлан 2024', type:'Тайлан', format:'DOCX', price:9900, link:''},
+    {id:'t1', icon:'📋', name:'Бизнес Тайлан 2026', type:'Тайлан', format:'DOCX', price:9900, link:''},
     {id:'t2', icon:'🎯', name:'Төслийн Санал', type:'Төсөл', format:'DOCX', price:12900, link:''},
     {id:'t3', icon:'📝', name:'Академик Эссэ', type:'Эссэ', format:'DOCX', price:7900, link:''},
     {id:'t4', icon:'👤', name:'Мэргэжлийн CV', type:'CV', format:'DOCX', price:14900, link:''},
@@ -652,7 +732,9 @@ function renderCourses(cat) {
   const data = cat === 'all' ? window.allCourses : window.allCourses.filter(c => c.cat === cat);
   document.getElementById('coursesGrid').innerHTML = data.map(c => `
     <div class="card">
-      <div class="card-icon">${c.icon||'📚'}</div>
+      ${c.mediaUrl && c.mediaType === 'image' ? `<img src="${c.mediaUrl}" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;margin-bottom:14px">` : ''}
+      ${c.mediaUrl && c.mediaType === 'video' ? `<video src="${c.mediaUrl}" muted loop autoplay playsinline style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;margin-bottom:14px"></video>` : ''}
+      ${!c.mediaUrl ? `<div class="card-icon">${c.icon||'📚'}</div>` : ''}
       <h3>${c.name}</h3>
       <p>${c.desc}</p>
       <div class="card-meta">
@@ -667,7 +749,9 @@ function renderCourses(cat) {
 function renderTemplates() {
   document.getElementById('templatesGrid').innerHTML = (window.allTemplates||[]).map(t => `
     <div class="template-card">
-      <div class="template-preview">${t.icon||'📄'}</div>
+      ${t.imgUrl
+        ? `<img src="${t.imgUrl}" class="template-preview-img">`
+        : `<div class="template-preview">${t.icon||'📄'}</div>`}
       <div class="template-info">
         <h3>${t.name}</h3>
         <p>${t.format} формат</p>
@@ -684,7 +768,9 @@ function renderTemplates() {
 function renderShop() {
   document.getElementById('shopGrid').innerHTML = (window.allShop||[]).map(s => `
     <div class="shop-card">
-      <div class="shop-img">${s.icon||'📦'}</div>
+      ${s.imgUrl
+        ? `<img src="${s.imgUrl}" class="shop-img-real">`
+        : `<div class="shop-img">${s.icon||'📦'}</div>`}
       <div class="shop-info">
         <h3>${s.name}</h3>
         <p>${s.desc}</p>
@@ -799,7 +885,7 @@ function openAdminLogin() { document.getElementById('adminLogin').classList.add(
 function doLogin() {
   const u = document.getElementById('adminUser').value.trim();
   const p = document.getElementById('adminPass').value;
-  if(u === 'admin' && p === 'GS@2024!') {
+  if(u === 'admin' && p === 'GS@2026!') {
     document.getElementById('adminLogin').classList.remove('open');
     document.getElementById('adminPanel').classList.add('open');
     document.getElementById('loginError').classList.remove('show');
@@ -826,10 +912,15 @@ function addCourse() {
     cat: document.getElementById('cCat').value,
     lessons: Number(document.getElementById('cLessons').value)||0,
     icon: document.getElementById('cIcon').value||'📚',
-    desc: document.getElementById('cDesc').value
+    desc: document.getElementById('cDesc').value,
+    mediaUrl: courseMediaDataURL || null,
+    mediaType: courseMediaType || null
   });
   document.getElementById('cName').value=''; document.getElementById('cPrice').value='';
   document.getElementById('cDesc').value='';
+  document.getElementById('cMediaPreview').classList.remove('show');
+  document.getElementById('cMediaInput').value='';
+  courseMediaDataURL = null; courseMediaType = null;
   showToast('✅ Сургалт нэмэгдлээ!');
 }
 
@@ -842,9 +933,13 @@ function addTemplate() {
     type: document.getElementById('tType').value,
     format: document.getElementById('tFormat').value,
     icon: document.getElementById('tIcon').value||'📄',
-    link: document.getElementById('tLink').value
+    link: document.getElementById('tLink').value,
+    imgUrl: templateImgDataURL || null
   });
   document.getElementById('tName').value=''; document.getElementById('tPrice').value='';
+  document.getElementById('tImgPreview').classList.remove('show');
+  document.getElementById('tImgInput').value='';
+  templateImgDataURL = null;
   showToast('✅ Загвар нэмэгдлээ!');
 }
 
@@ -856,9 +951,13 @@ function addShopItem() {
     name, price: Number(price),
     desc: document.getElementById('sDesc').value,
     delivery: document.getElementById('sDelivery').value||'1-3 хоног',
-    icon: document.getElementById('sIcon').value||'📦'
+    icon: document.getElementById('sIcon').value||'📦',
+    imgUrl: shopImgDataURL || null
   });
   document.getElementById('sName').value=''; document.getElementById('sPrice').value='';
+  document.getElementById('sImgPreview').classList.remove('show');
+  document.getElementById('sImgInput').value='';
+  shopImgDataURL = null;
   showToast('✅ Бараа нэмэгдлээ!');
 }
 
@@ -867,7 +966,7 @@ const chatAnswers = {
   'сургалт': 'Бидэнд 6+ мэргэжлийн сургалт байна! Excel, Word, PowerPoint, Photoshop, Python болон бусад. Нэг удаагийн төлбөртэй.',
   'загвар': 'Бэлэн загваруудыг ₮7,900-аас эхлэн татаж авч болно. DOCX, XLSX, PPTX форматуудаар байна.',
   'төлбөр': 'Дансны шилжүүлэг эсвэл QR кодоор төлбөр хийнэ. Нэг удаагийн төлбөр!',
-  'холбоо': '📞 99001122 | 📧 info@gs.mn',
+  'холбоо': '📧 info@gs.mn | 📘 Facebook: GS Сургалт',
   'default': 'Танд туслахдаа баяртай байна! Дэлгэрэнгүй мэдлэлийг авахын тулд сургалтуудыг үзнэ үү. 😊'
 };
 function sendQuick(msg) {
@@ -897,6 +996,120 @@ function showToast(msg) {
   t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 3000);
 }
 function scrollTo(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+
+// ========== HERO VIDEO FUNCTIONS ==========
+let heroVideoDataURL = null;
+
+function previewHeroVideo(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    heroVideoDataURL = e.target.result;
+    const preview = document.getElementById('heroVideoPreview');
+    const vid = document.getElementById('heroVideoEl');
+    vid.src = heroVideoDataURL;
+    preview.classList.add('show');
+    document.getElementById('heroVideoStatus').textContent = '✅ Видео бэлэн болсон. "Тохируулах" товчийг дарна уу.';
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyHeroVideo() {
+  if (!heroVideoDataURL) { showToast('⚠️ Эхлээд видео сонгоно уу!'); return; }
+  const container = document.getElementById('heroBgContainer');
+  container.innerHTML = `
+    <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.38;position:absolute;inset:0">
+      <source src="${heroVideoDataURL}">
+    </video>
+    <div class="hero-video-overlay"></div>
+  `;
+  // Save to sessionStorage for this session
+  try { sessionStorage.setItem('heroVideo', heroVideoDataURL); } catch(e) {}
+  showToast('🎬 Нүүр хуудасны видео тохируулагдлаа!');
+  document.getElementById('heroVideoStatus').textContent = '✅ Видео нүүр хуудсанд харагдаж байна.';
+}
+
+function removeHeroVideo() {
+  const container = document.getElementById('heroBgContainer');
+  container.innerHTML = `<div class="no-video-bg"><div class="hero-bg"></div><div class="hero-grid"></div></div>`;
+  heroVideoDataURL = null;
+  document.getElementById('heroVideoPreview').classList.remove('show');
+  document.getElementById('heroVideoEl').src = '';
+  document.getElementById('heroVideoInput').value = '';
+  try { sessionStorage.removeItem('heroVideo'); } catch(e) {}
+  showToast('🗑️ Видео арилгагдлаа!');
+  document.getElementById('heroVideoStatus').textContent = '';
+}
+
+// Restore hero video from session
+(function(){
+  try {
+    const saved = sessionStorage.getItem('heroVideo');
+    if (saved) {
+      const container = document.getElementById('heroBgContainer');
+      container.innerHTML = `
+        <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.38;position:absolute;inset:0">
+          <source src="${saved}">
+        </video>
+        <div class="hero-video-overlay"></div>
+      `;
+    }
+  } catch(e) {}
+})();
+
+// ========== COURSE MEDIA UPLOAD ==========
+let courseMediaDataURL = null;
+let courseMediaType = null;
+
+function previewCourseMedia(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const isVideo = file.type.startsWith('video/');
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    courseMediaDataURL = e.target.result;
+    courseMediaType = isVideo ? 'video' : 'image';
+    const preview = document.getElementById('cMediaPreview');
+    preview.innerHTML = isVideo
+      ? `<video src="${courseMediaDataURL}" controls style="width:100%;border-radius:10px;max-height:200px"></video>`
+      : `<img src="${courseMediaDataURL}" style="width:100%;border-radius:10px;max-height:200px;object-fit:cover">`;
+    preview.classList.add('show');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ========== TEMPLATE IMAGE UPLOAD ==========
+let templateImgDataURL = null;
+
+function previewTemplateImg(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    templateImgDataURL = e.target.result;
+    const preview = document.getElementById('tImgPreview');
+    preview.innerHTML = `<img src="${templateImgDataURL}" style="width:100%;border-radius:10px;max-height:180px;object-fit:cover">`;
+    preview.classList.add('show');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ========== SHOP IMAGE UPLOAD ==========
+let shopImgDataURL = null;
+
+function previewShopImg(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    shopImgDataURL = e.target.result;
+    const preview = document.getElementById('sImgPreview');
+    preview.innerHTML = `<img src="${shopImgDataURL}" style="width:100%;border-radius:10px;max-height:180px;object-fit:cover">`;
+    preview.classList.add('show');
+  };
+  reader.readAsDataURL(file);
+}
 </script>
 </body>
 </html>
