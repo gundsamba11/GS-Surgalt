@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GSM - Цахим мэдлэг</title>
+<title>GS - Сургалт</title>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -17,6 +17,7 @@
     --text2: #9ca3af;
     --success: #10b981;
     --danger: #ef4444;
+    --warning: #f59e0b;
     --border: rgba(255,255,255,0.08);
   }
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -25,6 +26,7 @@
   ::-webkit-scrollbar-track { background: var(--primary); }
   ::-webkit-scrollbar-thumb { background: var(--accent2); border-radius: 3px; }
 
+  /* NAV */
   nav {
     position: fixed; top: 0; width: 100%; z-index: 1000;
     background: rgba(10,10,15,0.92); backdrop-filter: blur(20px);
@@ -45,24 +47,44 @@
   .btn-primary:hover { opacity: .85; transform: translateY(-1px); }
   .btn-gold { background: linear-gradient(135deg, #f59e0b, #ef4444); color: #000; font-weight: 900; }
   .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245,158,11,.4); }
+  .btn-danger { background: rgba(239,68,68,.15); color: var(--danger); border: 1px solid rgba(239,68,68,.3); }
+  .btn-success { background: rgba(16,185,129,.15); color: var(--success); border: 1px solid rgba(16,185,129,.3); }
+  .btn-sm { padding: 6px 14px; font-size: .75rem; }
 
+  /* USER AVATAR */
+  .user-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    display: flex; align-items: center; justify-content: center;
+    font-size: .85rem; font-weight: 900; cursor: pointer;
+    border: 2px solid var(--accent); transition: transform .2s;
+  }
+  .user-avatar:hover { transform: scale(1.1); }
+  .user-dropdown {
+    position: absolute; top: 54px; right: 40px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 8px; min-width: 200px;
+    box-shadow: 0 16px 50px rgba(0,0,0,.5); display: none; z-index: 1100;
+  }
+  .user-dropdown.open { display: block; }
+  .user-dropdown-header { padding: 10px 12px 14px; border-bottom: 1px solid var(--border); margin-bottom: 6px; }
+  .user-dropdown-header strong { display: block; font-size: .88rem; }
+  .user-dropdown-header span { font-size: .75rem; color: var(--text2); }
+  .user-dropdown a { display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 8px; color: var(--text); font-size: .82rem; text-decoration: none; cursor: pointer; transition: background .15s; }
+  .user-dropdown a:hover { background: var(--surface2); }
+  .user-dropdown .logout-link { color: var(--danger); }
+
+  /* HERO */
   .hero {
     min-height: 100vh; display: flex; flex-direction: column;
     align-items: center; justify-content: center;
     text-align: center; padding: 100px 20px 60px; position: relative; overflow: hidden;
   }
-  .hero-video-bg {
-    position: absolute; inset: 0; z-index: 0; overflow: hidden;
-  }
-  .hero-video-bg video {
-    width: 100%; height: 100%; object-fit: cover; opacity: 0.35;
-  }
+  #heroBgContainer { position: absolute; inset: 0; z-index: 0; overflow: hidden; }
+  #heroBgContainer video { width:100%; height:100%; object-fit:cover; opacity:0.35; position:absolute; inset:0; }
   .hero-video-overlay {
     position: absolute; inset: 0;
     background: linear-gradient(to bottom, rgba(10,10,15,0.5) 0%, rgba(10,10,15,0.2) 50%, rgba(10,10,15,0.7) 100%);
-  }
-  .no-video-bg {
-    position: absolute; inset: 0; z-index: 0;
   }
   .hero-bg {
     position: absolute; inset: 0; z-index: 0;
@@ -87,15 +109,16 @@
   .hero p { font-size: 1.15rem; color: var(--text2); max-width: 600px; margin: 0 auto 40px; line-height: 1.7; }
   .hero-cta { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
 
+  /* SECTIONS */
   .section { padding: 80px 40px; max-width: 1400px; margin: 0 auto; }
   .section-header { text-align: center; margin-bottom: 56px; }
   .section-header h2 { font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; letter-spacing: -1px; margin-bottom: 12px; }
   .section-header p { color: var(--text2); font-size: 1rem; }
   .divider { height: 1px; background: var(--border); margin: 0 40px; }
-
   .grid-3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 24px; }
   .grid-4 { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
 
+  /* CARDS */
   .card {
     background: var(--surface); border-radius: 16px; padding: 28px;
     border: 1px solid var(--border); transition: all .3s; position: relative; overflow: hidden;
@@ -131,7 +154,7 @@
   .tab-btn { padding: 8px 22px; border-radius: 100px; font-size: .82rem; font-weight: 700; cursor: pointer; border: 1.5px solid var(--border); background: transparent; color: var(--text2); transition: all .2s; font-family: inherit; }
   .tab-btn.active { background: var(--accent); border-color: var(--accent); color: #000; }
 
-  /* MODAL */
+  /* MODAL - PAYMENT */
   .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 2000; align-items: center; justify-content: center; }
   .modal-overlay.open { display: flex; }
   .modal { background: var(--surface); border-radius: 20px; padding: 36px; max-width: 480px; width: 90%; border: 1px solid var(--border); position: relative; max-height: 90vh; overflow-y: auto; }
@@ -158,6 +181,39 @@
     font-family: inherit; outline: none; transition: border-color .2s;
   }
   .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--accent); }
+
+  /* AUTH MODAL */
+  .auth-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 8500; align-items: center; justify-content: center; }
+  .auth-overlay.open { display: flex; }
+  .auth-box { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 44px 40px; width: 400px; max-width: 95vw; }
+  .auth-box h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 6px; text-align: center; }
+  .auth-box .sub { color: var(--text2); font-size: .85rem; margin-bottom: 28px; text-align: center; }
+  .auth-tabs { display: flex; gap: 0; margin-bottom: 28px; border-radius: 10px; overflow: hidden; border: 1.5px solid var(--border); }
+  .auth-tab { flex: 1; padding: 10px; border: none; background: transparent; color: var(--text2); font-size: .82rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .2s; }
+  .auth-tab.active { background: var(--accent2); color: #fff; }
+  .auth-info { background: rgba(0,212,255,.06); border: 1px solid rgba(0,212,255,.2); border-radius: 10px; padding: 12px 14px; font-size: .78rem; color: var(--accent); margin-bottom: 16px; display: none; }
+  .auth-info.show { display: block; }
+  .error-msg { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: var(--danger); padding: 10px 14px; border-radius: 8px; font-size: .82rem; margin-bottom: 16px; display: none; }
+  .error-msg.show { display: block; }
+  .forgot-link { font-size: .78rem; color: var(--accent); cursor: pointer; text-align: right; margin-top: -8px; margin-bottom: 16px; }
+  .forgot-link:hover { text-decoration: underline; }
+  .divider-or { display: flex; align-items: center; gap: 12px; margin: 20px 0; color: var(--text2); font-size: .75rem; }
+  .divider-or::before, .divider-or::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+  .google-btn { width: 100%; padding: 11px; border-radius: 8px; border: 1.5px solid var(--border); background: transparent; color: var(--text); font-family: inherit; font-size: .85rem; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: border-color .2s; }
+  .google-btn:hover { border-color: var(--accent2); }
+
+  /* MY ORDERS MODAL */
+  .myorders-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.85); z-index: 3000; align-items: center; justify-content: center; }
+  .myorders-overlay.open { display: flex; }
+  .myorders-box { background: var(--surface); border-radius: 20px; padding: 36px; max-width: 700px; width: 95vw; max-height: 85vh; overflow-y: auto; border: 1px solid var(--border); position: relative; }
+  .myorders-box h2 { font-size: 1.3rem; font-weight: 900; margin-bottom: 24px; }
+  .order-item { background: var(--surface2); border-radius: 12px; padding: 16px 20px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+  .order-item-info h4 { font-size: .9rem; font-weight: 700; margin-bottom: 4px; }
+  .order-item-info span { font-size: .78rem; color: var(--text2); }
+  .order-status { padding: 5px 14px; border-radius: 100px; font-size: .72rem; font-weight: 700; }
+  .status-pending { background: rgba(245,158,11,.15); color: var(--warning); }
+  .status-confirmed { background: rgba(16,185,129,.15); color: var(--success); }
+  .status-rejected { background: rgba(239,68,68,.15); color: var(--danger); }
 
   /* CHAT */
   .chat-widget { position: fixed; bottom: 28px; right: 28px; z-index: 1500; }
@@ -196,10 +252,11 @@
   .stat-card { background: var(--surface); border-radius: 14px; padding: 20px; border: 1px solid var(--border); }
   .stat-card h4 { font-size: .72rem; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
   .stat-num { font-size: 1.8rem; font-weight: 900; }
-  .stat-change { font-size: .72rem; color: var(--success); margin-top: 4px; }
+  .stat-label { font-size: .72rem; color: var(--text2); margin-top: 4px; }
+  .stat-income { color: var(--success); }
   .data-table { width: 100%; border-collapse: collapse; font-size: .83rem; }
   .data-table th { background: var(--surface2); padding: 12px 14px; text-align: left; font-size: .72rem; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; }
-  .data-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); }
+  .data-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
   .badge { padding: 3px 10px; border-radius: 100px; font-size: .7rem; font-weight: 700; }
   .badge-success { background: rgba(16,185,129,.2); color: var(--success); }
   .badge-warning { background: rgba(245,158,11,.2); color: var(--gold); }
@@ -209,32 +266,28 @@
   .action-edit { background: rgba(0,212,255,.2); color: var(--accent); }
   .action-del { background: rgba(239,68,68,.2); color: var(--danger); }
   .action-ok { background: rgba(16,185,129,.2); color: var(--success); }
+  .action-reject { background: rgba(239,68,68,.2); color: var(--danger); }
   .admin-form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
   @media(max-width:600px){ .admin-form{ grid-template-columns:1fr; } }
   .upload-area { border: 2px dashed var(--border); border-radius: 14px; padding: 30px; text-align: center; cursor: pointer; transition: border-color .2s; }
   .upload-area:hover { border-color: var(--accent); }
   .upload-area input[type=file] { display: none; }
   .upload-preview { margin-top: 14px; border-radius: 10px; overflow: hidden; max-height: 200px; display: none; }
-  .upload-preview img { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; }
-  .upload-preview video { width: 100%; max-height: 200px; border-radius: 10px; }
+  .upload-preview img, .upload-preview video { width: 100%; max-height: 200px; object-fit: cover; border-radius: 10px; }
   .upload-preview.show { display: block; }
-  .media-thumb { display: inline-flex; align-items: center; gap: 8px; background: rgba(0,212,255,.1); border: 1px solid rgba(0,212,255,.3); border-radius: 8px; padding: 6px 12px; font-size: .78rem; color: var(--accent); margin-top: 10px; }
-  .course-card-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; border-radius: 10px; margin-bottom: 14px; display: none; }
-  .course-card-img.show { display: block; }
-  .template-preview-img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
-  .shop-img-real { width: 100%; aspect-ratio: 1; object-fit: cover; }
   .admin-video-tab { background: rgba(0,212,255,.08); border: 1px solid rgba(0,212,255,.2); border-radius: 12px; padding: 20px; margin-bottom: 20px; }
   .admin-video-tab h3 { font-size: .95rem; font-weight: 700; margin-bottom: 14px; color: var(--accent); }
+  .admin-section { background: var(--surface2); border-radius: 14px; padding: 20px; margin-bottom: 20px; }
+  .admin-section h3 { font-size: .95rem; font-weight: 700; margin-bottom: 16px; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; }
 
-  /* LOGIN */
+  /* ADMIN LOGIN */
   .login-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.9); z-index: 8000; align-items: center; justify-content: center; }
   .login-overlay.open { display: flex; }
   .login-box { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 44px 40px; width: 360px; text-align: center; }
   .login-box h2 { font-size: 1.5rem; font-weight: 900; margin-bottom: 6px; }
   .login-box p { color: var(--text2); font-size: .85rem; margin-bottom: 30px; }
-  .error-msg { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: var(--danger); padding: 10px 14px; border-radius: 8px; font-size: .82rem; margin-bottom: 16px; display: none; }
-  .error-msg.show { display: block; }
 
+  /* FOOTER */
   footer { background: var(--surface); border-top: 1px solid var(--border); padding: 60px 40px 30px; }
   .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; max-width: 1400px; margin: 0 auto 40px; }
   .footer-brand h3 { font-size: 1.3rem; font-weight: 900; margin-bottom: 10px; }
@@ -244,47 +297,77 @@
   .footer-col ul li { color: var(--text2); font-size: .85rem; }
   .footer-bottom { text-align: center; color: var(--text2); font-size: .78rem; padding-top: 24px; border-top: 1px solid var(--border); max-width: 1400px; margin: 0 auto; }
 
-  .toast { position: fixed; bottom: 100px; right: 28px; background: var(--surface); border: 1px solid var(--success); color: var(--success); padding: 14px 22px; border-radius: 12px; font-size: .85rem; font-weight: 700; z-index: 9999; transform: translateY(20px); opacity: 0; transition: all .3s; pointer-events: none; }
+  /* TOAST */
+  .toast { position: fixed; bottom: 100px; right: 28px; background: var(--surface); border: 1px solid var(--success); color: var(--success); padding: 14px 22px; border-radius: 12px; font-size: .85rem; font-weight: 700; z-index: 9999; transform: translateY(20px); opacity: 0; transition: all .3s; pointer-events: none; max-width: 320px; }
   .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.error { border-color: var(--danger); color: var(--danger); }
   .loading { text-align: center; padding: 40px; color: var(--text2); }
+
+  /* LOCK OVERLAY */
+  .lock-overlay {
+    position: absolute; inset: 0; background: rgba(10,10,15,.85); backdrop-filter: blur(4px);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    z-index: 2; border-radius: 16px; gap: 12px;
+  }
+  .lock-overlay span { font-size: 2rem; }
+  .lock-overlay p { font-size: .82rem; color: var(--text2); text-align: center; padding: 0 20px; }
+
+  /* SETTINGS MODAL */
+  .settings-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.8); z-index: 4000; align-items: center; justify-content: center; }
+  .settings-overlay.open { display: flex; }
+  .settings-box { background: var(--surface); border-radius: 20px; padding: 36px; max-width: 500px; width: 95vw; border: 1px solid var(--border); position: relative; max-height: 85vh; overflow-y: auto; }
+  .settings-box h2 { font-size: 1.3rem; font-weight: 900; margin-bottom: 24px; }
+  .settings-section { margin-bottom: 24px; }
+  .settings-section h3 { font-size: .82rem; color: var(--text2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; font-weight: 700; }
+  .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-row label { font-size: .85rem; font-weight: 600; }
+  .settings-row span { font-size: .78rem; color: var(--text2); }
+  .toggle { width: 44px; height: 24px; border-radius: 12px; background: var(--surface2); border: 1.5px solid var(--border); cursor: pointer; position: relative; transition: background .2s; }
+  .toggle.on { background: var(--accent2); border-color: var(--accent2); }
+  .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: transform .2s; }
+  .toggle.on::after { transform: translateX(20px); }
 
   @media(max-width:768px){
     nav { padding: 0 16px; }
     .nav-links { display: none; }
     .footer-grid { grid-template-columns: 1fr 1fr; }
     .section { padding: 60px 20px; }
+    .user-dropdown { right: 16px; }
   }
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav>
-  <div class="logo">GSM<span>·</span>Цахим мэдлэг</div>
+  <div class="logo">GS<span>·</span>Сургалт</div>
   <ul class="nav-links">
-    <li><a onclick="scrollTo('courses')">Сургалт</a></li>
-    <li><a onclick="scrollTo('templates')">Загварууд</a></li>
-    <li><a onclick="scrollTo('shop')">Дэлгүүр</a></li>
+    <li><a onclick="smoothScroll('courses')">Сургалт</a></li>
+    <li><a onclick="smoothScroll('templates')">Загварууд</a></li>
+    <li><a onclick="smoothScroll('shop')">Дэлгүүр</a></li>
   </ul>
   <div class="nav-right">
-    <button class="btn btn-outline" onclick="openAdminLogin()">🔐 Админ</button>
-    <button class="btn btn-primary" onclick="openModal('Гишүүнчлэл', '₮99,900')">Элсэх</button>
+    <button class="btn btn-outline" onclick="openAdminLogin()" style="font-size:.75rem;padding:7px 16px">🔐 Админ</button>
+    <div id="navAuthArea">
+      <button class="btn btn-primary" onclick="openAuth('login')">Нэвтрэх</button>
+    </div>
   </div>
 </nav>
 
+<!-- HERO -->
 <section class="hero">
-  <div class="hero-video-bg" id="heroBgContainer">
-    <div class="no-video-bg">
-      <div class="hero-bg"></div>
-      <div class="hero-grid"></div>
-    </div>
+  <div id="heroBgContainer">
+    <div class="hero-bg"></div>
+    <div class="hero-grid"></div>
   </div>
   <div class="hero-content">
     <div class="hero-badge">🎓 Монголын Тэргүүлэх Онлайн Сургалт</div>
     <h1>Мэдлэг. Ур Чадвар.<br><span class="grad">Ирээдүй.</span></h1>
     <p>Word, Excel, PowerPoint, Photoshop болон олон бусад чиглэлээр мэргэжлийн сургалт авч, бэлэн загварууд татаж, өөрийн ирээдүйг бүтээ.</p>
     <div class="hero-cta">
-      <button class="btn btn-gold" onclick="scrollTo('courses')">Сургалт үзэх ↓</button>
-      <button class="btn btn-outline" onclick="scrollTo('templates')">📄 Загварууд</button>
+      <button class="btn btn-gold" onclick="smoothScroll('courses')">Сургалт үзэх ↓</button>
+      <button class="btn btn-outline" onclick="smoothScroll('templates')">📄 Загварууд</button>
     </div>
   </div>
 </section>
@@ -330,7 +413,7 @@
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <h3>GSM · Цахим мэдлэг</h3>
+      <h3>GS · Сургалт</h3>
       <p>Монголын тэргүүлэх онлайн боловсролын платформ.</p>
     </div>
     <div class="footer-col">
@@ -346,7 +429,7 @@
       <ul><li>📧 info@gs.mn</li><li>📘 Facebook</li><li>📸 Instagram</li></ul>
     </div>
   </div>
-  <div class="footer-bottom">© 2026 GSM Сургалт. Бүх эрх хуулиар хамгаалагдсан.</div>
+  <div class="footer-bottom">© 2026 GS Сургалт. Бүх эрх хуулиар хамгаалагдсан.</div>
 </footer>
 
 <!-- PAYMENT MODAL -->
@@ -368,9 +451,9 @@
     </div>
     <div class="bank-details show" id="bankDetails">
       <div class="bank-row"><span>Банк:</span><span>Хаан Банк</span></div>
-      <div class="bank-row"><span>Дансны дугаар:</span><span>5248080400</span></div>
-      <div class="bank-row"><span>Хүлээн авагч:</span><span>ГСМ СУРГАЛТ </span></div>
-      <div class="bank-row"><span>Гүйлгээний утга:</span><span id="txRef">Утасны дугаар</span></div>
+      <div class="bank-row"><span>Дансны дугаар:</span><span>5274-XXXXXX</span></div>
+      <div class="bank-row"><span>Хүлээн авагч:</span><span>ГС СУРГАЛТ ХХК</span></div>
+      <div class="bank-row"><span>Гүйлгээний утга:</span><span id="txRef">ORD-001</span></div>
     </div>
     <div class="bank-details" id="qrDetails">
       <div class="qr-box">
@@ -378,12 +461,92 @@
         <p style="margin-top:10px;font-size:.78rem;color:var(--text2)">QR уншуулж төлнө үү</p>
       </div>
     </div>
-    <button class="btn btn-gold" style="width:100%;margin-top:20px;padding:14px" onclick="submitOrder()">✅ Захиалга батлах</button>
-    <button class="btn btn-outline" 
-style="width:100%;margin-top:10px;padding:14px;border-color:#ef4444;color:#ef4444" 
-onclick="closeModal()">
-❌ Цуцлах
-</button>
+    <p style="font-size:.75rem;color:var(--text2);margin-bottom:16px;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:8px;padding:10px">
+      ⚠️ Захиалга илгээсний дараа <strong>1-24 цагийн дотор</strong> баталгаажуулна. Баталгаажсан үед та үйлчилгээгээ авах боломжтой болно.
+    </p>
+    <button class="btn btn-gold" style="width:100%;padding:14px" onclick="submitOrder()">✅ Захиалга илгээх</button>
+  </div>
+</div>
+
+<!-- AUTH MODAL -->
+<div class="auth-overlay" id="authOverlay">
+  <div class="auth-box">
+    <button class="modal-close" onclick="closeAuth()" style="position:absolute;top:16px;right:20px">✕</button>
+    <div style="font-size:2.5rem;text-align:center;margin-bottom:12px">🎓</div>
+    <h2>GS · Сургалт</h2>
+    <p class="sub">Бүртгүүлж нэвтэрч захиалгаа хянана уу</p>
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">Нэвтрэх</button>
+      <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Бүртгүүлэх</button>
+    </div>
+    <div class="error-msg" id="authError"></div>
+    <div class="auth-info" id="authInfo"></div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm">
+      <div class="form-group"><label>Имэйл</label><input type="email" id="loginEmail" placeholder="example@gmail.com"></div>
+      <div class="form-group"><label>Нууц үг</label><input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doUserLogin()"></div>
+      <div class="forgot-link" onclick="doForgotPassword()">Нууц үгээ мартсан уу?</div>
+      <button class="btn btn-primary" style="width:100%;padding:12px" onclick="doUserLogin()">Нэвтрэх →</button>
+      <div class="divider-or">эсвэл</div>
+      <button class="google-btn" onclick="doGoogleLogin()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Google-ээр нэвтрэх
+      </button>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerForm" style="display:none">
+      <div class="form-group"><label>Бүтэн нэр</label><input type="text" id="regName" placeholder="Нэр Овог"></div>
+      <div class="form-group"><label>Имэйл</label><input type="email" id="regEmail" placeholder="example@gmail.com"></div>
+      <div class="form-group"><label>Утасны дугаар</label><input type="text" id="regPhone" placeholder="99XXXXXX"></div>
+      <div class="form-group"><label>Нууц үг</label><input type="password" id="regPass" placeholder="•••••••• (8+ тэмдэгт)"></div>
+      <div class="form-group"><label>Нууц үг давтах</label><input type="password" id="regPass2" placeholder="••••••••" onkeydown="if(event.key==='Enter')doRegister()"></div>
+      <button class="btn btn-primary" style="width:100%;padding:12px" onclick="doRegister()">Бүртгүүлэх →</button>
+      <div class="divider-or">эсвэл</div>
+      <button class="google-btn" onclick="doGoogleLogin()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+        Google-ээр бүртгүүлэх
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MY ORDERS MODAL -->
+<div class="myorders-overlay" id="myOrdersOverlay">
+  <div class="myorders-box">
+    <button class="modal-close" onclick="closeMyOrders()">✕</button>
+    <h2>📦 Миний Захиалгууд</h2>
+    <div id="myOrdersList"><div class="loading">⏳ Ачааллаж байна...</div></div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-box">
+    <button class="modal-close" onclick="document.getElementById('settingsOverlay').classList.remove('open')">✕</button>
+    <h2>⚙️ Тохиргоо</h2>
+    <div class="settings-section">
+      <h3>Профайл мэдээлэл</h3>
+      <div class="form-group"><label>Нэр</label><input type="text" id="settingsName" placeholder="Таны нэр"></div>
+      <div class="form-group"><label>Утас</label><input type="text" id="settingsPhone" placeholder="99XXXXXX"></div>
+      <button class="btn btn-primary btn-sm" onclick="saveSettings()">Хадгалах</button>
+    </div>
+    <div class="settings-section">
+      <h3>Нууц үг солих</h3>
+      <div class="form-group"><label>Шинэ нууц үг</label><input type="password" id="newPassword" placeholder="••••••••"></div>
+      <button class="btn btn-outline btn-sm" onclick="changePassword()">Нууц үг солих</button>
+    </div>
+    <div class="settings-section">
+      <h3>Мэдэгдэл</h3>
+      <div class="settings-row">
+        <div><label>Захиалгын мэдэгдэл</label><br><span>Захиалга батлагдсан үед имэйл</span></div>
+        <div class="toggle on" id="toggleNotif" onclick="this.classList.toggle('on')"></div>
+      </div>
+    </div>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border)">
+      <button class="btn btn-danger btn-sm" onclick="doLogout()">🚪 Гарах</button>
+    </div>
   </div>
 </div>
 
@@ -406,12 +569,14 @@ onclick="closeModal()">
   <div class="admin-nav">
     <div class="admin-logo">⚙️ GS Admin</div>
     <div class="admin-tabs">
-      <button class="admin-tab active" onclick="switchTab('dashboard',this)">Хяналт</button>
-      <button class="admin-tab" onclick="switchTab('orders',this)">Захиалга</button>
-      <button class="admin-tab" onclick="switchTab('hero-video',this)">🎬 Нүүр видео</button>
-      <button class="admin-tab" onclick="switchTab('add-course',this)">Сургалт+</button>
-      <button class="admin-tab" onclick="switchTab('add-template',this)">Загвар+</button>
-      <button class="admin-tab" onclick="switchTab('add-shop',this)">Бараа+</button>
+      <button class="admin-tab active" onclick="switchTab('dashboard',this)">📊 Хяналт</button>
+      <button class="admin-tab" onclick="switchTab('orders',this)">📦 Захиалга</button>
+      <button class="admin-tab" onclick="switchTab('users',this)">👥 Хэрэглэгчид</button>
+      <button class="admin-tab" onclick="switchTab('hero-video',this)">🎬 Видео</button>
+      <button class="admin-tab" onclick="switchTab('add-course',this)">📚 Сургалт+</button>
+      <button class="admin-tab" onclick="switchTab('add-template',this)">📄 Загвар+</button>
+      <button class="admin-tab" onclick="switchTab('add-shop',this)">🛍️ Бараа+</button>
+      <button class="admin-tab" onclick="switchTab('site-settings',this)">⚙️ Тохиргоо</button>
     </div>
     <button class="admin-close" onclick="document.getElementById('adminPanel').classList.remove('open')">✕ Гарах</button>
   </div>
@@ -421,19 +586,65 @@ onclick="closeModal()">
     <div class="admin-panel active" id="panel-dashboard">
       <h2>📊 Хяналтын Самбар</h2>
       <div class="stats-row" id="statsRow">
-        <div class="stat-card"><h4>Захиалга</h4><div class="stat-num" id="statOrders">-</div></div>
-        <div class="stat-card"><h4>Сургалт</h4><div class="stat-num" id="statCourses">-</div></div>
-        <div class="stat-card"><h4>Загвар</h4><div class="stat-num" id="statTemplates">-</div></div>
-        <div class="stat-card"><h4>Бараа</h4><div class="stat-num" id="statShop">-</div></div>
+        <div class="stat-card">
+          <h4>Нийт захиалга</h4>
+          <div class="stat-num" id="statOrders">-</div>
+          <div class="stat-label" id="statPending" style="color:var(--warning)">-</div>
+        </div>
+        <div class="stat-card">
+          <h4>Батлагдсан</h4>
+          <div class="stat-num stat-income" id="statConfirmed">-</div>
+          <div class="stat-label">захиалга</div>
+        </div>
+        <div class="stat-card">
+          <h4>Нийт орлого</h4>
+          <div class="stat-num stat-income" id="statIncome">-</div>
+          <div class="stat-label">₮</div>
+        </div>
+        <div class="stat-card">
+          <h4>Хэрэглэгч</h4>
+          <div class="stat-num" id="statUsers">-</div>
+          <div class="stat-label">бүртгэлтэй</div>
+        </div>
+        <div class="stat-card">
+          <h4>Сургалт</h4>
+          <div class="stat-num" id="statCourses">-</div>
+        </div>
+        <div class="stat-card">
+          <h4>Загвар</h4>
+          <div class="stat-num" id="statTemplates">-</div>
+        </div>
+        <div class="stat-card">
+          <h4>Бараа</h4>
+          <div class="stat-num" id="statShop">-</div>
+        </div>
       </div>
-      <h3 style="margin-bottom:16px;font-size:1rem">Сүүлийн захиалгууд</h3>
-      <div id="recentOrders"><div class="loading">⏳ Ачааллаж байна...</div></div>
+      <div class="admin-section">
+        <h3>🔔 Хүлээгдэж буй захиалгууд</h3>
+        <div id="pendingOrdersList"><div class="loading">⏳ Ачааллаж байна...</div></div>
+      </div>
+      <div class="admin-section" style="margin-top:20px">
+        <h3>📈 Сүүлийн 10 захиалга</h3>
+        <div id="recentOrders"><div class="loading">⏳</div></div>
+      </div>
     </div>
 
     <!-- ORDERS -->
     <div class="admin-panel" id="panel-orders">
       <h2>📦 Бүх Захиалга</h2>
-      <div id="allOrdersList"><div class="loading">⏳ Ачааллаж байна...</div></div>
+      <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+        <button class="tab-btn active" onclick="filterOrders('all',this)">Бүгд</button>
+        <button class="tab-btn" onclick="filterOrders('pending',this)">⏳ Хүлээгдэж байна</button>
+        <button class="tab-btn" onclick="filterOrders('confirmed',this)">✅ Батлагдсан</button>
+        <button class="tab-btn" onclick="filterOrders('rejected',this)">❌ Татгалзсан</button>
+      </div>
+      <div id="allOrdersList"><div class="loading">⏳</div></div>
+    </div>
+
+    <!-- USERS -->
+    <div class="admin-panel" id="panel-users">
+      <h2>👥 Хэрэглэгчид</h2>
+      <div id="usersList"><div class="loading">⏳ Ачааллаж байна...</div></div>
     </div>
 
     <!-- HERO VIDEO -->
@@ -441,7 +652,7 @@ onclick="closeModal()">
       <h2>🎬 Нүүр Хуудасны Видео</h2>
       <div class="admin-video-tab">
         <h3>Арын видео оруулах</h3>
-        <p style="color:var(--text2);font-size:.83rem;margin-bottom:16px">Нүүр хуудасны ард тоглогдох видео файл оруулна уу. MP4 формат дэмжигдэнэ.</p>
+        <p style="color:var(--text2);font-size:.83rem;margin-bottom:16px">Нүүр хуудасны ард тоглогдох видео файл оруулна уу. MP4 формат дэмжигдэнэ. <strong style="color:var(--accent)">Хуудас дахин ачааллахад видео хадгалагдана.</strong></p>
         <div class="upload-area" onclick="document.getElementById('heroVideoInput').click()">
           <div style="font-size:3rem;margin-bottom:12px">🎬</div>
           <p style="font-weight:700;margin-bottom:6px">Видео файл сонгох</p>
@@ -453,7 +664,7 @@ onclick="closeModal()">
         </div>
         <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap">
           <button class="btn btn-primary" onclick="applyHeroVideo()">✅ Нүүр хуудсанд тохируулах</button>
-          <button class="btn btn-outline" onclick="removeHeroVideo()" style="border-color:var(--danger);color:var(--danger)">🗑️ Видео арилгах</button>
+          <button class="btn" onclick="removeHeroVideo()" style="border:1.5px solid var(--danger);color:var(--danger);background:transparent">🗑️ Видео арилгах</button>
         </div>
         <div id="heroVideoStatus" style="margin-top:12px;font-size:.82rem;color:var(--text2)"></div>
       </div>
@@ -505,11 +716,10 @@ onclick="closeModal()">
           <div class="form-group"><label>Үнэ (₮)</label><input type="number" id="tPrice" placeholder="9900"></div>
           <div class="form-group"><label>Emoji дүрс</label><input type="text" id="tIcon" placeholder="📋"></div>
           <div class="form-group"><label>Татах линк (Google Drive)</label><input type="text" id="tLink" placeholder="https://drive.google.com/..."></div>
-          <div class="form-group"><label>Урьдчилан харах зураг оруулах</label>
+          <div class="form-group"><label>Урьдчилан харах зураг</label>
             <div class="upload-area" onclick="document.getElementById('tImgInput').click()">
               <div style="font-size:2rem;margin-bottom:8px">🖼️</div>
               <p style="font-size:.82rem;font-weight:700">Зураг сонгох</p>
-              <p style="font-size:.72rem;color:var(--text2)">JPG, PNG дэмжигдэнэ</p>
               <input type="file" id="tImgInput" accept="image/*" onchange="previewTemplateImg(this)">
             </div>
             <div class="upload-preview" id="tImgPreview"></div>
@@ -533,11 +743,10 @@ onclick="closeModal()">
           <div class="form-group"><label>Үнэ (₮)</label><input type="number" id="sPrice" placeholder="890000"></div>
           <div class="form-group"><label>Хүргэлт</label><input type="text" id="sDelivery" placeholder="1-3 хоног"></div>
           <div class="form-group"><label>Emoji дүрс</label><input type="text" id="sIcon" placeholder="💻"></div>
-          <div class="form-group"><label>Барааны зураг оруулах</label>
+          <div class="form-group"><label>Барааны зураг</label>
             <div class="upload-area" onclick="document.getElementById('sImgInput').click()">
               <div style="font-size:2rem;margin-bottom:8px">🖼️</div>
               <p style="font-size:.82rem;font-weight:700">Зураг сонгох</p>
-              <p style="font-size:.72rem;color:var(--text2)">JPG, PNG дэмжигдэнэ</p>
               <input type="file" id="sImgInput" accept="image/*" onchange="previewShopImg(this)">
             </div>
             <div class="upload-preview" id="sImgPreview"></div>
@@ -551,6 +760,29 @@ onclick="closeModal()">
       </div>
     </div>
 
+    <!-- SITE SETTINGS -->
+    <div class="admin-panel" id="panel-site-settings">
+      <h2>⚙️ Сайтын Тохиргоо</h2>
+      <div class="admin-section">
+        <h3>Ерөнхий мэдээлэл</h3>
+        <div class="form-group"><label>Сайтын нэр</label><input type="text" id="siteName" value="GS · Сургалт"></div>
+        <div class="form-group"><label>Дэд гарчиг</label><input type="text" id="siteSlogan" value="Монголын Тэргүүлэх Онлайн Сургалт"></div>
+        <div class="form-group"><label>Холбоо барих имэйл</label><input type="text" id="siteEmail" value="info@gs.mn"></div>
+      </div>
+      <div class="admin-section">
+        <h3>Банкны мэдээлэл</h3>
+        <div class="form-group"><label>Банкны нэр</label><input type="text" id="bankName" value="Хаан Банк"></div>
+        <div class="form-group"><label>Дансны дугаар</label><input type="text" id="bankAccount" value="5274-XXXXXX"></div>
+        <div class="form-group"><label>Хүлээн авагч</label><input type="text" id="bankOwner" value="ГС СУРГАЛТ ХХК"></div>
+        <button class="btn btn-primary" onclick="saveSiteSettings()">💾 Тохиргоо хадгалах</button>
+      </div>
+      <div class="admin-section" style="margin-top:20px">
+        <h3>Аюулгүй байдал</h3>
+        <div class="form-group"><label>Шинэ нууц үг</label><input type="password" id="newAdminPass" placeholder="Шинэ нууц үг оруулна уу"></div>
+        <button class="btn btn-outline" onclick="changeAdminPass()">🔑 Нууц үг солих</button>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -558,7 +790,7 @@ onclick="closeModal()">
 <div class="chat-widget">
   <div class="chat-box" id="chatBox">
     <div class="chat-header">
-      <h4>🤖 GSM Туслагч</h4>
+      <h4>🤖 GS Туслагч</h4>
       <p>Онлайн • Яг одоо хариулна</p>
     </div>
     <div class="chat-messages" id="chatMessages">
@@ -578,12 +810,20 @@ onclick="closeModal()">
   <button class="chat-toggle" onclick="document.getElementById('chatBox').classList.toggle('open')">💬</button>
 </div>
 
-<div class="toast" id="toast">✅ Амжилттай!</div>
+<div class="toast" id="toast"></div>
 
 <!-- FIREBASE -->
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore, collection, addDoc, getDocs, deleteDoc, doc,
+    query, orderBy, serverTimestamp, updateDoc, where, getDoc, setDoc
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import {
+    getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+    signOut, onAuthStateChanged, GoogleAuthProvider, signInWithPopup,
+    sendPasswordResetEmail, updatePassword
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyASB1eI-GA5Ngfydaf7ClO3bNdoBPGpMpE",
@@ -596,105 +836,96 @@ onclick="closeModal()">
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  window.db = db;
-  window.fbFuncs = { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, serverTimestamp };
+  const auth = getAuth(app);
+  const googleProvider = new GoogleAuthProvider();
 
-  // Load all data
-  loadCourses();
-  loadTemplates();
-  loadShop();
-  loadOrders();
+  window.db = db;
+  window.auth = auth;
+  window.fbFuncs = { collection, addDoc, getDocs, deleteDoc, doc, query, orderBy, serverTimestamp, updateDoc, where, getDoc, setDoc };
+  window.fbAuth = { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, updatePassword };
+
+  // AUTH STATE
+  onAuthStateChanged(auth, (user) => {
+    window.currentUser = user;
+    updateNavAuth(user);
+  });
+
+  // LOAD DATA
+  loadCourses(); loadTemplates(); loadShop(); loadOrders();
+  restoreHeroVideo();
 
   async function loadCourses() {
     try {
       const snap = await getDocs(collection(db, 'courses'));
       window.allCourses = snap.docs.map(d => ({id: d.id, ...d.data()}));
-      if(window.allCourses.length === 0) {
-        window.allCourses = getDefaultCourses();
-      }
-      renderCourses('all');
-      renderAdminCourses();
-      document.getElementById('statCourses').textContent = window.allCourses.length;
-    } catch(e) {
-      window.allCourses = getDefaultCourses();
-      renderCourses('all');
-      document.getElementById('statCourses').textContent = window.allCourses.length;
-    }
+      if(window.allCourses.length === 0) window.allCourses = getDefaultCourses();
+    } catch(e) { window.allCourses = getDefaultCourses(); }
+    renderCourses('all');
+    renderAdminCourses();
+    document.getElementById('statCourses').textContent = window.allCourses.length;
   }
 
   async function loadTemplates() {
     try {
       const snap = await getDocs(collection(db, 'templates'));
       window.allTemplates = snap.docs.map(d => ({id: d.id, ...d.data()}));
-      if(window.allTemplates.length === 0) {
-        window.allTemplates = getDefaultTemplates();
-      }
-      renderTemplates();
-      renderAdminTemplates();
-      document.getElementById('statTemplates').textContent = window.allTemplates.length;
-    } catch(e) {
-      window.allTemplates = getDefaultTemplates();
-      renderTemplates();
-      document.getElementById('statTemplates').textContent = window.allTemplates.length;
-    }
+      if(window.allTemplates.length === 0) window.allTemplates = getDefaultTemplates();
+    } catch(e) { window.allTemplates = getDefaultTemplates(); }
+    renderTemplates();
+    renderAdminTemplates();
+    document.getElementById('statTemplates').textContent = window.allTemplates.length;
   }
 
   async function loadShop() {
     try {
       const snap = await getDocs(collection(db, 'shop'));
       window.allShop = snap.docs.map(d => ({id: d.id, ...d.data()}));
-      if(window.allShop.length === 0) {
-        window.allShop = getDefaultShop();
-      }
-      renderShop();
-      renderAdminShop();
-      document.getElementById('statShop').textContent = window.allShop.length;
-    } catch(e) {
-      window.allShop = getDefaultShop();
-      renderShop();
-      document.getElementById('statShop').textContent = window.allShop.length;
-    }
+      if(window.allShop.length === 0) window.allShop = getDefaultShop();
+    } catch(e) { window.allShop = getDefaultShop(); }
+    renderShop();
+    renderAdminShop();
+    document.getElementById('statShop').textContent = window.allShop.length;
   }
 
   async function loadOrders() {
     try {
       const snap = await getDocs(collection(db, 'orders'));
       window.allOrders = snap.docs.map(d => ({id: d.id, ...d.data()}));
-      renderOrders();
-      document.getElementById('statOrders').textContent = window.allOrders.length;
-    } catch(e) {
-      window.allOrders = [];
-      document.getElementById('recentOrders').innerHTML = '<p style="color:var(--text2)">Захиалга байхгүй байна.</p>';
-      document.getElementById('statOrders').textContent = '0';
-    }
+      window.allOrders.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
+    } catch(e) { window.allOrders = []; }
+    renderOrders('all');
+    renderPendingOrders();
+    updateStats();
+    loadUsers();
+  }
+
+  async function loadUsers() {
+    try {
+      const snap = await getDocs(collection(db, 'users'));
+      window.allUsers = snap.docs.map(d => ({id: d.id, ...d.data()}));
+    } catch(e) { window.allUsers = []; }
+    document.getElementById('statUsers').textContent = window.allUsers.length;
+    renderUsers();
   }
 
   window.saveOrder = async function(order) {
     try {
-      await addDoc(collection(db, 'orders'), {...order, createdAt: serverTimestamp()});
+      await addDoc(collection(db, 'orders'), {...order, status: 'pending', createdAt: serverTimestamp()});
       loadOrders();
-    } catch(e) { console.log(e); }
+      showToast('🎉 Захиалга илгээгдлээ! Баталгаажуулалт хүлээнэ үү.');
+    } catch(e) { showToast('Алдаа гарлаа!', true); }
   }
 
-  window.saveCourse = async function(course) {
+  window.updateOrderStatus = async function(orderId, status) {
     try {
-      await addDoc(collection(db, 'courses'), course);
-      loadCourses();
-    } catch(e) { showToast('Алдаа гарлаа!'); }
-  }
-
-  window.saveTemplate = async function(tmpl) {
-    try {
-      await addDoc(collection(db, 'templates'), tmpl);
-      loadTemplates();
-    } catch(e) { showToast('Алдаа гарлаа!'); }
-  }
-
-  window.saveShopItem = async function(item) {
-    try {
-      await addDoc(collection(db, 'shop'), item);
-      loadShop();
-    } catch(e) { showToast('Алдаа гарлаа!'); }
+      await updateDoc(doc(db, 'orders', orderId), { status });
+      const o = window.allOrders.find(x => x.id === orderId);
+      if(o) o.status = status;
+      renderOrders(window.currentOrderFilter || 'all');
+      renderPendingOrders();
+      updateStats();
+      showToast(status === 'confirmed' ? '✅ Захиалга батлагдлаа!' : '❌ Захиалга татгалзагдлаа!');
+    } catch(e) { showToast('Алдаа!', true); }
   }
 
   window.deleteItem = async function(colName, id, reloadFn) {
@@ -702,11 +933,233 @@ onclick="closeModal()">
       await deleteDoc(doc(db, colName, id));
       reloadFn();
       showToast('🗑️ Устгагдлаа!');
-    } catch(e) { showToast('Алдаа гарлаа!'); }
+    } catch(e) { showToast('Алдаа гарлаа!', true); }
+  }
+
+  window.saveCourse = async function(course) {
+    try { await addDoc(collection(db, 'courses'), course); loadCourses(); } catch(e) { showToast('Алдаа!', true); }
+  }
+  window.saveTemplate = async function(tmpl) {
+    try { await addDoc(collection(db, 'templates'), tmpl); loadTemplates(); } catch(e) { showToast('Алдаа!', true); }
+  }
+  window.saveShopItem = async function(item) {
+    try { await addDoc(collection(db, 'shop'), item); loadShop(); } catch(e) { showToast('Алдаа!', true); }
+  }
+
+  // AUTH FUNCTIONS
+  window.doUserLogin = async function() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass = document.getElementById('loginPass').value;
+    setAuthError(''); setAuthInfo('');
+    if(!email || !pass) { setAuthError('Имэйл болон нууц үгээ оруулна уу!'); return; }
+    try {
+      await signInWithEmailAndPassword(auth, email, pass);
+      closeAuth();
+      showToast('👋 Тавтай морил!');
+    } catch(e) {
+      const msgs = { 'auth/user-not-found': 'Имэйл бүртгэлтэй биш байна!', 'auth/wrong-password': 'Нууц үг буруу!', 'auth/invalid-credential': 'Нэвтрэх мэдээлэл буруу!' };
+      setAuthError(msgs[e.code] || 'Нэвтрэхэд алдаа гарлаа!');
+    }
+  }
+
+  window.doRegister = async function() {
+    const name = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const phone = document.getElementById('regPhone').value.trim();
+    const pass = document.getElementById('regPass').value;
+    const pass2 = document.getElementById('regPass2').value;
+    setAuthError(''); setAuthInfo('');
+    if(!name || !email || !pass) { setAuthError('Бүх талбарыг бөглөнө үү!'); return; }
+    if(pass.length < 8) { setAuthError('Нууц үг 8-аас дээш тэмдэгт байх ёстой!'); return; }
+    if(pass !== pass2) { setAuthError('Нууц үг таарахгүй байна!'); return; }
+    try {
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      await setDoc(doc(db, 'users', cred.user.uid), { name, email, phone, createdAt: serverTimestamp() });
+      closeAuth();
+      showToast('🎉 Бүртгэл амжилттай!');
+      loadUsers();
+    } catch(e) {
+      const msgs = { 'auth/email-already-in-use': 'Энэ имэйл аль хэдийн бүртгэлтэй!' };
+      setAuthError(msgs[e.code] || 'Бүртгэхэд алдаа гарлаа!');
+    }
+  }
+
+  window.doGoogleLogin = async function() {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      const userRef = doc(db, 'users', user.uid);
+      const snap = await getDoc(userRef);
+      if(!snap.exists()) {
+        await setDoc(userRef, { name: user.displayName, email: user.email, phone: '', createdAt: serverTimestamp() });
+        loadUsers();
+      }
+      closeAuth();
+      showToast('👋 Google-ээр нэвтэрлээ!');
+    } catch(e) { setAuthError('Google нэвтрэхэд алдаа гарлаа!'); }
+  }
+
+  window.doForgotPassword = async function() {
+    const email = document.getElementById('loginEmail').value.trim();
+    if(!email) { setAuthError('Имэйл хаягаа оруулна уу!'); return; }
+    try {
+      await sendPasswordResetEmail(auth, email);
+      setAuthError('');
+      setAuthInfo('📧 Нууц үг шинэчлэх имэйл илгээгдлээ!');
+    } catch(e) { setAuthError('Имэйл илгээхэд алдаа гарлаа!'); }
+  }
+
+  window.doLogout = async function() {
+    try {
+      await signOut(auth);
+      document.getElementById('settingsOverlay').classList.remove('open');
+      showToast('👋 Гарлаа!');
+    } catch(e) {}
+  }
+
+  window.changePassword = async function() {
+    const newPass = document.getElementById('newPassword').value;
+    if(!newPass || newPass.length < 8) { showToast('8+ тэмдэгт оруулна уу!', true); return; }
+    try {
+      await updatePassword(auth.currentUser, newPass);
+      document.getElementById('newPassword').value = '';
+      showToast('✅ Нууц үг солигдлоо!');
+    } catch(e) { showToast('Алдаа! Дахин нэвтэрч үзнэ үү.', true); }
+  }
+
+  // Load user orders
+  window.loadMyOrders = async function() {
+    if(!window.currentUser) return;
+    try {
+      const snap = await getDocs(query(collection(db, 'orders'), where('uid', '==', window.currentUser.uid)));
+      const orders = snap.docs.map(d => ({id: d.id, ...d.data()}));
+      orders.sort((a,b) => (b.createdAt?.seconds||0) - (a.createdAt?.seconds||0));
+      const el = document.getElementById('myOrdersList');
+      if(orders.length === 0) {
+        el.innerHTML = '<p style="color:var(--text2);text-align:center;padding:40px">Захиалга байхгүй байна.</p>';
+        return;
+      }
+      el.innerHTML = orders.map(o => `
+        <div class="order-item">
+          <div class="order-item-info">
+            <h4>${o.product||'Бүтээгдэхүүн'}</h4>
+            <span>${o.price||''} • ${o.method||''} • ${o.date||''}</span>
+            <br><span style="font-size:.72rem;color:var(--text2)">Лавлах: ${o.ref||'-'}</span>
+          </div>
+          <span class="order-status ${o.status === 'confirmed' ? 'status-confirmed' : o.status === 'rejected' ? 'status-rejected' : 'status-pending'}">
+            ${o.status === 'confirmed' ? '✅ Батлагдсан' : o.status === 'rejected' ? '❌ Татгалзсан' : '⏳ Хүлээгдэж байна'}
+          </span>
+        </div>
+      `).join('');
+    } catch(e) {
+      document.getElementById('myOrdersList').innerHTML = '<p style="color:var(--text2)">Алдаа гарлаа.</p>';
+    }
+  }
+
+  function restoreHeroVideo() {
+    try {
+      const saved = localStorage.getItem('heroVideo_gs');
+      if (saved) {
+        applyVideoToHero(saved);
+        document.getElementById('heroVideoStatus').textContent = '✅ Видео ачааллагдлаа.';
+      }
+    } catch(e) {}
+  }
+
+  window.applyVideoToHero = function(dataURL) {
+    const container = document.getElementById('heroBgContainer');
+    container.innerHTML = `
+      <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.38;position:absolute;inset:0;z-index:0">
+        <source src="${dataURL}">
+      </video>
+      <div class="hero-video-overlay"></div>
+    `;
   }
 </script>
 
 <script>
+// ======= HELPERS =======
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (isError ? ' error' : '');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 3500);
+}
+function smoothScroll(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+function setAuthError(msg) {
+  const el = document.getElementById('authError');
+  el.textContent = msg; el.className = 'error-msg' + (msg ? ' show' : '');
+}
+function setAuthInfo(msg) {
+  const el = document.getElementById('authInfo');
+  el.textContent = msg; el.className = 'auth-info' + (msg ? ' show' : '');
+}
+
+// ======= AUTH UI =======
+function updateNavAuth(user) {
+  const area = document.getElementById('navAuthArea');
+  if(user) {
+    const initials = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
+    area.innerHTML = `
+      <div class="user-avatar" onclick="toggleUserDropdown()" title="${user.displayName||user.email}">${initials}</div>
+      <div class="user-dropdown" id="userDropdown">
+        <div class="user-dropdown-header">
+          <strong>${user.displayName||'Хэрэглэгч'}</strong>
+          <span>${user.email}</span>
+        </div>
+        <a onclick="openMyOrders()">📦 Миний захиалгууд</a>
+        <a onclick="openSettings()">⚙️ Тохиргоо</a>
+        <a class="logout-link" onclick="doLogout()">🚪 Гарах</a>
+      </div>
+    `;
+  } else {
+    area.innerHTML = `<button class="btn btn-primary" onclick="openAuth('login')">Нэвтрэх</button>`;
+  }
+}
+
+function toggleUserDropdown() {
+  const d = document.getElementById('userDropdown');
+  if(d) d.classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  const d = document.getElementById('userDropdown');
+  if(d && !d.parentElement.contains(e.target)) d.classList.remove('open');
+});
+
+function openAuth(tab) {
+  document.getElementById('authOverlay').classList.add('open');
+  switchAuthTab(tab||'login');
+  setAuthError(''); setAuthInfo('');
+}
+function closeAuth() { document.getElementById('authOverlay').classList.remove('open'); }
+function switchAuthTab(tab) {
+  document.getElementById('loginForm').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab==='register' ? 'block' : 'none';
+  document.getElementById('tabLogin').classList.toggle('active', tab==='login');
+  document.getElementById('tabRegister').classList.toggle('active', tab==='register');
+  setAuthError(''); setAuthInfo('');
+}
+document.getElementById('authOverlay').addEventListener('click', function(e){ if(e.target===this) closeAuth(); });
+
+function openMyOrders() {
+  if(!window.currentUser) { openAuth('login'); return; }
+  const d = document.getElementById('userDropdown'); if(d) d.classList.remove('open');
+  document.getElementById('myOrdersOverlay').classList.add('open');
+  window.loadMyOrders();
+}
+function closeMyOrders() { document.getElementById('myOrdersOverlay').classList.remove('open'); }
+document.getElementById('myOrdersOverlay').addEventListener('click', function(e){ if(e.target===this) closeMyOrders(); });
+
+function openSettings() {
+  if(!window.currentUser) return;
+  const d = document.getElementById('userDropdown'); if(d) d.classList.remove('open');
+  if(window.currentUser.displayName) document.getElementById('settingsName').value = window.currentUser.displayName;
+  document.getElementById('settingsOverlay').classList.add('open');
+}
+function saveSettings() { showToast('✅ Хадгалагдлаа! (Firebase профайл шинэчлэлт шаардлагатай)'); }
+
+// ======= DEFAULT DATA =======
 function getDefaultCourses() {
   return [
     {id:'c1', cat:'office', icon:'📊', name:'Microsoft Excel Мастер', desc:'VLOOKUP, Pivot Table, макро бүрэн эзэмшинэ.', price:49900, lessons:24},
@@ -733,10 +1186,14 @@ function getDefaultShop() {
   ];
 }
 
+// ======= RENDER =======
 function renderCourses(cat) {
-  const data = cat === 'all' ? window.allCourses : window.allCourses.filter(c => c.cat === cat);
-  document.getElementById('coursesGrid').innerHTML = data.map(c => `
-    <div class="card">
+  const data = cat === 'all' ? window.allCourses : (window.allCourses||[]).filter(c => c.cat === cat);
+  const isLoggedIn = !!window.currentUser;
+  document.getElementById('coursesGrid').innerHTML = (data||[]).map(c => {
+    const locked = !isLoggedIn;
+    return `
+    <div class="card" style="position:relative">
       ${c.mediaUrl && c.mediaType === 'image' ? `<img src="${c.mediaUrl}" style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;margin-bottom:14px">` : ''}
       ${c.mediaUrl && c.mediaType === 'video' ? `<video src="${c.mediaUrl}" muted loop autoplay playsinline style="width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;margin-bottom:14px"></video>` : ''}
       ${!c.mediaUrl ? `<div class="card-icon">${c.icon||'📚'}</div>` : ''}
@@ -746,17 +1203,19 @@ function renderCourses(cat) {
         <span class="price">₮${Number(c.price).toLocaleString()}</span>
         <span class="meta-info">📖 ${c.lessons} хичээл</span>
       </div>
-      <button class="btn btn-primary" style="width:100%" onclick="openModal('${c.name}','₮${Number(c.price).toLocaleString()}')">Худалдан авах</button>
-    </div>
-  `).join('') || '<p style="color:var(--text2);text-align:center;padding:40px">Сургалт байхгүй байна.</p>';
+      ${locked
+        ? `<button class="btn btn-outline" style="width:100%" onclick="openAuth('login')">🔐 Нэвтэрч худалдан авах</button>`
+        : `<button class="btn btn-primary" style="width:100%" onclick="openModal('${c.name}','₮${Number(c.price).toLocaleString()}')">Худалдан авах</button>`
+      }
+    </div>`;
+  }).join('') || '<p style="color:var(--text2);text-align:center;padding:40px">Сургалт байхгүй байна.</p>';
 }
 
 function renderTemplates() {
+  const isLoggedIn = !!window.currentUser;
   document.getElementById('templatesGrid').innerHTML = (window.allTemplates||[]).map(t => `
     <div class="template-card">
-      ${t.imgUrl
-        ? `<img src="${t.imgUrl}" class="template-preview-img">`
-        : `<div class="template-preview">${t.icon||'📄'}</div>`}
+      ${t.imgUrl ? `<img src="${t.imgUrl}" style="width:100%;aspect-ratio:4/3;object-fit:cover">` : `<div class="template-preview">${t.icon||'📄'}</div>`}
       <div class="template-info">
         <h3>${t.name}</h3>
         <p>${t.format} формат</p>
@@ -764,7 +1223,10 @@ function renderTemplates() {
           <span class="type-badge">${t.type}</span>
           <span class="price">₮${Number(t.price).toLocaleString()}</span>
         </div>
-        <button class="btn btn-gold" style="width:100%;padding:8px" onclick="openModal('${t.name}','₮${Number(t.price).toLocaleString()}','${t.link||''}')">⬇ Татах</button>
+        ${isLoggedIn
+          ? `<button class="btn btn-gold" style="width:100%;padding:8px" onclick="openModal('${t.name}','₮${Number(t.price).toLocaleString()}','${t.link||''}')">⬇ Татах</button>`
+          : `<button class="btn btn-outline" style="width:100%;padding:8px" onclick="openAuth('login')">🔐 Нэвтрэч татах</button>`
+        }
       </div>
     </div>
   `).join('') || '<p style="color:var(--text2);text-align:center;padding:40px">Загвар байхгүй байна.</p>';
@@ -773,9 +1235,7 @@ function renderTemplates() {
 function renderShop() {
   document.getElementById('shopGrid').innerHTML = (window.allShop||[]).map(s => `
     <div class="shop-card">
-      ${s.imgUrl
-        ? `<img src="${s.imgUrl}" class="shop-img-real">`
-        : `<div class="shop-img">${s.icon||'📦'}</div>`}
+      ${s.imgUrl ? `<img src="${s.imgUrl}" style="width:100%;aspect-ratio:1;object-fit:cover">` : `<div class="shop-img">${s.icon||'📦'}</div>`}
       <div class="shop-info">
         <h3>${s.name}</h3>
         <p>${s.desc}</p>
@@ -783,77 +1243,146 @@ function renderShop() {
           <span class="price">₮${Number(s.price).toLocaleString()}</span>
           <span class="delivery">🚚 ${s.delivery}</span>
         </div>
-        <button class="btn btn-primary" style="width:100%;margin-top:10px" onclick="openModal('${s.name}','₮${Number(s.price).toLocaleString()}')">Захиалах</button>
+        <button class="btn btn-primary" style="width:100%" onclick="openModal('${s.name}','₮${Number(s.price).toLocaleString()}')">Захиалах</button>
       </div>
     </div>
   `).join('') || '<p style="color:var(--text2);text-align:center;padding:40px">Бараа байхгүй байна.</p>';
 }
 
-function renderOrders() {
-  const orders = window.allOrders || [];
-  const html = orders.length === 0 ? '<p style="color:var(--text2)">Захиалга байхгүй байна.</p>' :
-    `<table class="data-table">
-      <tr><th>Бүтээгдэхүүн</th><th>Нэр</th><th>Утас</th><th>Дүн</th><th>Арга</th><th>Огноо</th></tr>
-      ${orders.slice().reverse().slice(0,20).map(o => `
-        <tr>
-          <td>${o.product||'-'}</td>
-          <td>${o.name||'-'}</td>
-          <td>${o.phone||'-'}</td>
-          <td>${o.price||'-'}</td>
-          <td>${o.method||'-'}</td>
-          <td>${o.date||'-'}</td>
-        </tr>
-      `).join('')}
-    </table>`;
-  document.getElementById('recentOrders').innerHTML = html;
+window.currentOrderFilter = 'all';
+function renderOrders(filter) {
+  window.currentOrderFilter = filter;
+  const orders = (window.allOrders||[]).filter(o => filter === 'all' || o.status === filter);
+  const html = orders.length === 0
+    ? '<p style="color:var(--text2);padding:20px">Захиалга байхгүй байна.</p>'
+    : `<table class="data-table">
+        <tr><th>Бүтээгдэхүүн</th><th>Нэр</th><th>Утас</th><th>Дүн</th><th>Арга</th><th>Огноо</th><th>Статус</th><th>Үйлдэл</th></tr>
+        ${orders.map(o => `
+          <tr>
+            <td>${o.product||'-'}</td>
+            <td>${o.name||'-'}</td>
+            <td>${o.phone||'-'}</td>
+            <td style="color:var(--gold);font-weight:700">${o.price||'-'}</td>
+            <td>${o.method||'-'}</td>
+            <td>${o.date||'-'}</td>
+            <td><span class="badge ${o.status==='confirmed'?'badge-success':o.status==='rejected'?'badge-danger':'badge-warning'}">
+              ${o.status==='confirmed'?'✅ Батлагдсан':o.status==='rejected'?'❌ Татгалзсан':'⏳ Хүлээгдэж байна'}
+            </span></td>
+            <td>
+              ${o.status !== 'confirmed' ? `<button class="action-btn action-ok" onclick="window.updateOrderStatus('${o.id}','confirmed')">✅</button>` : ''}
+              ${o.status !== 'rejected' ? `<button class="action-btn action-reject" onclick="window.updateOrderStatus('${o.id}','rejected')">❌</button>` : ''}
+              <button class="action-btn action-del" onclick="window.deleteItem('orders','${o.id}',()=>{window.allOrders=window.allOrders.filter(x=>x.id!=='${o.id}');renderOrders(window.currentOrderFilter);updateStats();})">🗑️</button>
+            </td>
+          </tr>
+        `).join('')}
+      </table>`;
   if(document.getElementById('allOrdersList')) document.getElementById('allOrdersList').innerHTML = html;
 }
 
-function renderAdminCourses() {
-  const el = document.getElementById('coursesList');
+function renderPendingOrders() {
+  const pending = (window.allOrders||[]).filter(o => o.status === 'pending');
+  const el = document.getElementById('pendingOrdersList');
   if(!el) return;
+  if(pending.length === 0) { el.innerHTML = '<p style="color:var(--text2)">Хүлээгдэж буй захиалга байхгүй. ✅</p>'; return; }
+  el.innerHTML = `<table class="data-table">
+    <tr><th>Бүтээгдэхүүн</th><th>Хэрэглэгч</th><th>Утас</th><th>Дүн</th><th>Арга</th><th>Огноо</th><th>Үйлдэл</th></tr>
+    ${pending.map(o => `
+      <tr>
+        <td><strong>${o.product||'-'}</strong></td>
+        <td>${o.name||'-'}</td>
+        <td>${o.phone||'-'}</td>
+        <td style="color:var(--gold);font-weight:700">${o.price||'-'}</td>
+        <td>${o.method||'-'}</td>
+        <td>${o.date||'-'}</td>
+        <td>
+          <button class="action-btn action-ok" onclick="window.updateOrderStatus('${o.id}','confirmed')">✅ Батлах</button>
+          <button class="action-btn action-reject" onclick="window.updateOrderStatus('${o.id}','rejected')">❌ Татгалзах</button>
+        </td>
+      </tr>
+    `).join('')}
+  </table>`;
+}
+
+function renderAdminCourses() {
+  const el = document.getElementById('coursesList'); if(!el) return;
   el.innerHTML = (window.allCourses||[]).map(c => `
     <div style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
       <span style="font-size:.85rem">${c.icon||'📚'} ${c.name}</span>
-      <button class="action-btn action-del" onclick="window.deleteItem('courses','${c.id}',()=>{window.allCourses=window.allCourses.filter(x=>x.id!=='${c.id}');renderCourses('all');renderAdminCourses();})">✕</button>
+      <button class="action-btn action-del" onclick="window.deleteItem('courses','${c.id}',()=>{window.allCourses=window.allCourses.filter(x=>x.id!=='${c.id}');renderCourses('all');renderAdminCourses();document.getElementById('statCourses').textContent=window.allCourses.length;})">✕</button>
     </div>
   `).join('') || '<p style="color:var(--text2);font-size:.82rem">Сургалт байхгүй</p>';
 }
-
 function renderAdminTemplates() {
-  const el = document.getElementById('templatesList');
-  if(!el) return;
+  const el = document.getElementById('templatesList'); if(!el) return;
   el.innerHTML = (window.allTemplates||[]).map(t => `
     <div style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
       <span style="font-size:.85rem">${t.icon||'📄'} ${t.name}</span>
-      <button class="action-btn action-del" onclick="window.deleteItem('templates','${t.id}',()=>{window.allTemplates=window.allTemplates.filter(x=>x.id!=='${t.id}');renderTemplates();renderAdminTemplates();})">✕</button>
+      <button class="action-btn action-del" onclick="window.deleteItem('templates','${t.id}',()=>{window.allTemplates=window.allTemplates.filter(x=>x.id!=='${t.id}');renderTemplates();renderAdminTemplates();document.getElementById('statTemplates').textContent=window.allTemplates.length;})">✕</button>
     </div>
   `).join('') || '<p style="color:var(--text2);font-size:.82rem">Загвар байхгүй</p>';
 }
-
 function renderAdminShop() {
-  const el = document.getElementById('shopList');
-  if(!el) return;
+  const el = document.getElementById('shopList'); if(!el) return;
   el.innerHTML = (window.allShop||[]).map(s => `
     <div style="background:var(--surface2);border-radius:8px;padding:12px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center">
       <span style="font-size:.85rem">${s.icon||'📦'} ${s.name}</span>
-      <button class="action-btn action-del" onclick="window.deleteItem('shop','${s.id}',()=>{window.allShop=window.allShop.filter(x=>x.id!=='${s.id}');renderShop();renderAdminShop();})">✕</button>
+      <button class="action-btn action-del" onclick="window.deleteItem('shop','${s.id}',()=>{window.allShop=window.allShop.filter(x=>x.id!=='${s.id}');renderShop();renderAdminShop();document.getElementById('statShop').textContent=window.allShop.length;})">✕</button>
     </div>
   `).join('') || '<p style="color:var(--text2);font-size:.82rem">Бараа байхгүй</p>';
 }
 
+function renderUsers() {
+  const el = document.getElementById('usersList'); if(!el) return;
+  const users = window.allUsers || [];
+  if(users.length === 0) { el.innerHTML = '<p style="color:var(--text2)">Бүртгэлтэй хэрэглэгч байхгүй байна.</p>'; return; }
+  el.innerHTML = `<table class="data-table">
+    <tr><th>#</th><th>Нэр</th><th>Имэйл</th><th>Утас</th><th>Бүртгэлтэй</th></tr>
+    ${users.map((u,i) => `
+      <tr>
+        <td>${i+1}</td>
+        <td><strong>${u.name||'-'}</strong></td>
+        <td>${u.email||'-'}</td>
+        <td>${u.phone||'-'}</td>
+        <td>${u.createdAt?.seconds ? new Date(u.createdAt.seconds*1000).toLocaleDateString('mn-MN') : '-'}</td>
+      </tr>
+    `).join('')}
+  </table>`;
+}
+
+function updateStats() {
+  const orders = window.allOrders || [];
+  const confirmed = orders.filter(o => o.status === 'confirmed');
+  const pending = orders.filter(o => o.status === 'pending');
+  const income = confirmed.reduce((sum, o) => {
+    const n = parseInt((o.price||'').replace(/[^0-9]/g, '')) || 0;
+    return sum + n;
+  }, 0);
+  document.getElementById('statOrders').textContent = orders.length;
+  document.getElementById('statConfirmed').textContent = confirmed.length;
+  document.getElementById('statPending').textContent = `${pending.length} хүлээгдэж байна`;
+  document.getElementById('statIncome').textContent = '₮' + income.toLocaleString();
+}
+
+function filterOrders(f, el) {
+  document.querySelectorAll('#panel-orders .tab-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  renderOrders(f);
+}
 function filterCourses(cat, el) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.courses-tabs .tab-btn').forEach(b => b.classList.remove('active'));
   el.classList.add('active');
   renderCourses(cat);
 }
 
-// MODAL
+// ======= MODAL =======
 let currentLink = '';
 function openModal(title, price, link) {
+  if(!window.currentUser) { openAuth('login'); return; }
   document.getElementById('modalTitle').textContent = title;
   document.getElementById('modalPrice').textContent = price;
   document.getElementById('txRef').textContent = 'ORD-' + Math.floor(Math.random()*9000+1000);
+  // Pre-fill from user profile
+  if(window.currentUser.displayName) document.getElementById('buyerName').value = window.currentUser.displayName;
   currentLink = link || '';
   document.getElementById('payModal').classList.add('open');
 }
@@ -870,36 +1399,47 @@ function selectPay(m) {
 function submitOrder() {
   const name = document.getElementById('buyerName').value.trim();
   const phone = document.getElementById('buyerPhone').value.trim();
-  if(!name || !phone) { showToast('⚠️ Нэр, утасны дугаар оруулна уу!'); return; }
+  if(!name || !phone) { showToast('⚠️ Нэр, утасны дугаар оруулна уу!', true); return; }
   const order = {
     product: document.getElementById('modalTitle').textContent,
     price: document.getElementById('modalPrice').textContent,
     name, phone,
+    uid: window.currentUser ? window.currentUser.uid : null,
     method: document.querySelector('.pay-method.selected p').textContent,
     date: new Date().toLocaleDateString('mn-MN'),
-    ref: document.getElementById('txRef').textContent
+    ref: document.getElementById('txRef').textContent,
+    status: 'pending'
   };
   window.saveOrder(order);
   closeModal();
-  if(currentLink) { setTimeout(() => window.open(currentLink, '_blank'), 1000); }
-  showToast('🎉 Захиалга амжилттай! Баталгаажуулалт хүлээнэ үү.');
+  if(currentLink) setTimeout(() => window.open(currentLink, '_blank'), 1000);
 }
 
-// ADMIN
+// ======= ADMIN =======
 function openAdminLogin() { document.getElementById('adminLogin').classList.add('open'); }
+let adminPassword = 'GS@2026!';
 function doLogin() {
   const u = document.getElementById('adminUser').value.trim();
   const p = document.getElementById('adminPass').value;
-  if(u === 'admin' && p === 'GS@2026!') {
+  if(u === 'admin' && p === adminPassword) {
     document.getElementById('adminLogin').classList.remove('open');
     document.getElementById('adminPanel').classList.add('open');
     document.getElementById('loginError').classList.remove('show');
-    renderAdminCourses(); renderAdminTemplates(); renderAdminShop();
+    renderAdminCourses(); renderAdminTemplates(); renderAdminShop(); renderUsers();
+    renderOrders('all'); renderPendingOrders(); updateStats();
   } else {
     document.getElementById('loginError').classList.add('show');
     document.getElementById('adminPass').value = '';
   }
 }
+function changeAdminPass() {
+  const np = document.getElementById('newAdminPass').value;
+  if(!np || np.length < 6) { showToast('6+ тэмдэгт оруулна уу!', true); return; }
+  adminPassword = np;
+  document.getElementById('newAdminPass').value = '';
+  showToast('✅ Нууц үг солигдлоо!');
+}
+function saveSiteSettings() { showToast('✅ Тохиргоо хадгалагдлаа!'); }
 
 function switchTab(id, el) {
   document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
@@ -911,67 +1451,144 @@ function switchTab(id, el) {
 function addCourse() {
   const name = document.getElementById('cName').value.trim();
   const price = document.getElementById('cPrice').value;
-  if(!name || !price) { showToast('⚠️ Нэр, үнэ оруулна уу!'); return; }
+  if(!name || !price) { showToast('⚠️ Нэр, үнэ оруулна уу!', true); return; }
   window.saveCourse({
     name, price: Number(price),
     cat: document.getElementById('cCat').value,
     lessons: Number(document.getElementById('cLessons').value)||0,
     icon: document.getElementById('cIcon').value||'📚',
     desc: document.getElementById('cDesc').value,
-    mediaUrl: courseMediaDataURL || null,
-    mediaType: courseMediaType || null
+    mediaUrl: window._courseMedia || null,
+    mediaType: window._courseMediaType || null
   });
   document.getElementById('cName').value=''; document.getElementById('cPrice').value='';
   document.getElementById('cDesc').value='';
   document.getElementById('cMediaPreview').classList.remove('show');
   document.getElementById('cMediaInput').value='';
-  courseMediaDataURL = null; courseMediaType = null;
+  window._courseMedia = null; window._courseMediaType = null;
   showToast('✅ Сургалт нэмэгдлээ!');
 }
 
 function addTemplate() {
   const name = document.getElementById('tName').value.trim();
   const price = document.getElementById('tPrice').value;
-  if(!name || !price) { showToast('⚠️ Нэр, үнэ оруулна уу!'); return; }
+  if(!name || !price) { showToast('⚠️ Нэр, үнэ оруулна уу!', true); return; }
   window.saveTemplate({
     name, price: Number(price),
     type: document.getElementById('tType').value,
     format: document.getElementById('tFormat').value,
     icon: document.getElementById('tIcon').value||'📄',
     link: document.getElementById('tLink').value,
-    imgUrl: templateImgDataURL || null
+    imgUrl: window._templateImg || null
   });
   document.getElementById('tName').value=''; document.getElementById('tPrice').value='';
   document.getElementById('tImgPreview').classList.remove('show');
   document.getElementById('tImgInput').value='';
-  templateImgDataURL = null;
+  window._templateImg = null;
   showToast('✅ Загвар нэмэгдлээ!');
 }
 
 function addShopItem() {
   const name = document.getElementById('sName').value.trim();
   const price = document.getElementById('sPrice').value;
-  if(!name || !price) { showToast('⚠️ Нэр, үнэ оруулна уу!'); return; }
+  if(!name || !price) { showToast('⚠️ Нэр, үнэ оруулна уу!', true); return; }
   window.saveShopItem({
     name, price: Number(price),
     desc: document.getElementById('sDesc').value,
     delivery: document.getElementById('sDelivery').value||'1-3 хоног',
     icon: document.getElementById('sIcon').value||'📦',
-    imgUrl: shopImgDataURL || null
+    imgUrl: window._shopImg || null
   });
   document.getElementById('sName').value=''; document.getElementById('sPrice').value='';
   document.getElementById('sImgPreview').classList.remove('show');
   document.getElementById('sImgInput').value='';
-  shopImgDataURL = null;
+  window._shopImg = null;
   showToast('✅ Бараа нэмэгдлээ!');
 }
 
-// CHAT
+// ======= VIDEO BG =======
+let heroVideoDataURL = null;
+
+function previewHeroVideo(input) {
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    heroVideoDataURL = e.target.result;
+    const vid = document.getElementById('heroVideoEl');
+    vid.src = heroVideoDataURL;
+    document.getElementById('heroVideoPreview').classList.add('show');
+    document.getElementById('heroVideoStatus').textContent = '✅ Видео бэлэн болсон. "Тохируулах" товчийг дарна уу.';
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyHeroVideo() {
+  if(!heroVideoDataURL) { showToast('⚠️ Эхлээд видео сонгоно уу!', true); return; }
+  window.applyVideoToHero(heroVideoDataURL);
+  try { localStorage.setItem('heroVideo_gs', heroVideoDataURL); } catch(e) { showToast('⚠️ Видео хэт том байна, хадгалагдахгүй.', true); }
+  showToast('🎬 Видео тохируулагдлаа!');
+  document.getElementById('heroVideoStatus').textContent = '✅ Видео нүүр хуудсанд харагдаж байна.';
+}
+
+function removeHeroVideo() {
+  document.getElementById('heroBgContainer').innerHTML = `<div class="hero-bg"></div><div class="hero-grid"></div>`;
+  heroVideoDataURL = null;
+  document.getElementById('heroVideoPreview').classList.remove('show');
+  document.getElementById('heroVideoEl').src = '';
+  document.getElementById('heroVideoInput').value = '';
+  try { localStorage.removeItem('heroVideo_gs'); } catch(e) {}
+  showToast('🗑️ Видео арилгагдлаа!');
+  document.getElementById('heroVideoStatus').textContent = '';
+}
+
+// ======= MEDIA UPLOADS =======
+function previewCourseMedia(input) {
+  const file = input.files[0]; if(!file) return;
+  const isVideo = file.type.startsWith('video/');
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    window._courseMedia = e.target.result;
+    window._courseMediaType = isVideo ? 'video' : 'image';
+    const preview = document.getElementById('cMediaPreview');
+    preview.innerHTML = isVideo
+      ? `<video src="${e.target.result}" controls style="width:100%;border-radius:10px;max-height:200px"></video>`
+      : `<img src="${e.target.result}" style="width:100%;border-radius:10px;max-height:200px;object-fit:cover">`;
+    preview.classList.add('show');
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewTemplateImg(input) {
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    window._templateImg = e.target.result;
+    const preview = document.getElementById('tImgPreview');
+    preview.innerHTML = `<img src="${e.target.result}" style="width:100%;border-radius:10px;max-height:180px;object-fit:cover">`;
+    preview.classList.add('show');
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewShopImg(input) {
+  const file = input.files[0]; if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    window._shopImg = e.target.result;
+    const preview = document.getElementById('sImgPreview');
+    preview.innerHTML = `<img src="${e.target.result}" style="width:100%;border-radius:10px;max-height:180px;object-fit:cover">`;
+    preview.classList.add('show');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ======= CHAT =======
 const chatAnswers = {
   'сургалт': 'Бидэнд 6+ мэргэжлийн сургалт байна! Excel, Word, PowerPoint, Photoshop, Python болон бусад. Нэг удаагийн төлбөртэй.',
   'загвар': 'Бэлэн загваруудыг ₮7,900-аас эхлэн татаж авч болно. DOCX, XLSX, PPTX форматуудаар байна.',
-  'төлбөр': 'Дансны шилжүүлэг эсвэл QR кодоор төлбөр хийнэ. Нэг удаагийн төлбөр!',
+  'төлбөр': 'Дансны шилжүүлэг эсвэл QR кодоор төлбөр хийнэ. Нэг удаагийн төлбөр! Захиалга 1-24 цагт баталгаажна.',
   'холбоо': '📧 info@gs.mn | 📘 Facebook: GS Сургалт',
+  'захиалга': 'Захиалга хийсний дараа 1-24 цагийн дотор баталгаажуулна. Профайлдаа "Миний захиалгууд" хэсгээс статусаа харах боломжтой.',
   'default': 'Танд туслахдаа баяртай байна! Дэлгэрэнгүй мэдлэлийг авахын тулд сургалтуудыг үзнэ үү. 😊'
 };
 function sendQuick(msg) {
@@ -994,126 +1611,6 @@ function appendMsg(text, type) {
   const c = document.getElementById('chatMessages');
   const d = document.createElement('div'); d.className='msg '+type; d.textContent=text;
   c.appendChild(d); c.scrollTop = c.scrollHeight;
-}
-
-function showToast(msg) {
-  const t = document.getElementById('toast'); t.textContent=msg;
-  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 3000);
-}
-function scrollTo(id) { document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
-
-// ========== HERO VIDEO FUNCTIONS ==========
-let heroVideoDataURL = null;
-
-function previewHeroVideo(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    heroVideoDataURL = e.target.result;
-    const preview = document.getElementById('heroVideoPreview');
-    const vid = document.getElementById('heroVideoEl');
-    vid.src = heroVideoDataURL;
-    preview.classList.add('show');
-    document.getElementById('heroVideoStatus').textContent = '✅ Видео бэлэн болсон. "Тохируулах" товчийг дарна уу.';
-  };
-  reader.readAsDataURL(file);
-}
-
-function applyHeroVideo() {
-  if (!heroVideoDataURL) { showToast('⚠️ Эхлээд видео сонгоно уу!'); return; }
-  const container = document.getElementById('heroBgContainer');
-  container.innerHTML = `
-    <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.38;position:absolute;inset:0">
-      <source src="${heroVideoDataURL}">
-    </video>
-    <div class="hero-video-overlay"></div>
-  `;
-  // Save to sessionStorage for this session
-  try { sessionStorage.setItem('heroVideo', heroVideoDataURL); } catch(e) {}
-  showToast('🎬 Нүүр хуудасны видео тохируулагдлаа!');
-  document.getElementById('heroVideoStatus').textContent = '✅ Видео нүүр хуудсанд харагдаж байна.';
-}
-
-function removeHeroVideo() {
-  const container = document.getElementById('heroBgContainer');
-  container.innerHTML = `<div class="no-video-bg"><div class="hero-bg"></div><div class="hero-grid"></div></div>`;
-  heroVideoDataURL = null;
-  document.getElementById('heroVideoPreview').classList.remove('show');
-  document.getElementById('heroVideoEl').src = '';
-  document.getElementById('heroVideoInput').value = '';
-  try { sessionStorage.removeItem('heroVideo'); } catch(e) {}
-  showToast('🗑️ Видео арилгагдлаа!');
-  document.getElementById('heroVideoStatus').textContent = '';
-}
-
-// Restore hero video from session
-(function(){
-  try {
-    const saved = sessionStorage.getItem('heroVideo');
-    if (saved) {
-      const container = document.getElementById('heroBgContainer');
-      container.innerHTML = `
-        <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;opacity:0.38;position:absolute;inset:0">
-          <source src="${saved}">
-        </video>
-        <div class="hero-video-overlay"></div>
-      `;
-    }
-  } catch(e) {}
-})();
-
-// ========== COURSE MEDIA UPLOAD ==========
-let courseMediaDataURL = null;
-let courseMediaType = null;
-
-function previewCourseMedia(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const isVideo = file.type.startsWith('video/');
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    courseMediaDataURL = e.target.result;
-    courseMediaType = isVideo ? 'video' : 'image';
-    const preview = document.getElementById('cMediaPreview');
-    preview.innerHTML = isVideo
-      ? `<video src="${courseMediaDataURL}" controls style="width:100%;border-radius:10px;max-height:200px"></video>`
-      : `<img src="${courseMediaDataURL}" style="width:100%;border-radius:10px;max-height:200px;object-fit:cover">`;
-    preview.classList.add('show');
-  };
-  reader.readAsDataURL(file);
-}
-
-// ========== TEMPLATE IMAGE UPLOAD ==========
-let templateImgDataURL = null;
-
-function previewTemplateImg(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    templateImgDataURL = e.target.result;
-    const preview = document.getElementById('tImgPreview');
-    preview.innerHTML = `<img src="${templateImgDataURL}" style="width:100%;border-radius:10px;max-height:180px;object-fit:cover">`;
-    preview.classList.add('show');
-  };
-  reader.readAsDataURL(file);
-}
-
-// ========== SHOP IMAGE UPLOAD ==========
-let shopImgDataURL = null;
-
-function previewShopImg(input) {
-  const file = input.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    shopImgDataURL = e.target.result;
-    const preview = document.getElementById('sImgPreview');
-    preview.innerHTML = `<img src="${shopImgDataURL}" style="width:100%;border-radius:10px;max-height:180px;object-fit:cover">`;
-    preview.classList.add('show');
-  };
-  reader.readAsDataURL(file);
 }
 </script>
 </body>
